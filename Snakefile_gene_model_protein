@@ -1,0 +1,731 @@
+# A global singularity image to be used for all jobs - need to specify --use-singularity and have singularity available on the command line
+# This image already contains the bioinformatic tools we will be using singularity:
+#"file:///shared/.singularity/nextflow-embl-abr-webinar.simg", 
+"docker://rsuchecki/nextflow-embl-abr-webinar"
+
+SAMPLES1 = [
+"WT_8_DPA_4_S1",
+"WT_8_DPA_5_S2",
+"WT_8_DPA_6_S3",
+"WT_10_DPA_4_S4",
+"WT_10_DPA_6_S6",
+"WT_12_DPA_4_S7",
+"WT_12_DPA_5_S8",
+"WT_12_DPA_6_S9",
+"WT_14_DPA_4_S10",
+"WT_14_DPA_5_S11",
+"WT_14_DPA_6_S12",
+"1078_6_8_DPA_2_S13",
+"1078_6_8_DPA_3_S14",
+"1078_6_10_DPA_1_S16",
+"1078_6_10_DPA_3_S17",
+"1078_6_10_DPA_4_S18",
+"1078_6_12_DPA_6_S19",
+"1078_6_12_DPA_4_S20",
+"1078_6_12_DPA_5_S21",
+"1078_6_14_DPA_4_S22",
+"1078_6_14_DPA_5_S23",
+"1078_6_14_DPA_1_S24"]
+
+#Note: S5 and S15 are discarded due to ribosomal contamination reaching >90%
+
+SAMPLES2 = [
+"7_C7N8UANXX_GAGTGG_L006",
+"8_C7N8UANXX_ACTGAT_L006",
+"9_C7N8UANXX_ATTCCT_L006",
+"10_C7N8UANXX_ATCACG_L006",
+"7_C7N8UANXX_GAGTGG_L007",
+"8_C7N8UANXX_ACTGAT_L007",
+"9_C7N8UANXX_ATTCCT_L007",
+"10_C7N8UANXX_ATCACG_L007",
+"SRR5434206",
+"SRR5434207",
+#"SRR5434208",
+#"SRR5434209",
+"SRR5434210",
+"SRR5434211",
+#"SRR5434212",
+#"SRR5434213"
+]
+
+SAMPLES3 = [
+"JPo_1_C5697ACXX_CCGTCC_L005",
+"JPo_2_C5697ACXX_GTCCGC_L005",
+"JPo_3_C5697ACXX_GTGAAA_L005",
+"JPo_4_C5697ACXX_GTGGCC_L005",
+"SRR3883619",
+"SRR3883620",
+"SRR3883621",
+"SRR3883622",
+"SRR3885726",
+"SRR3885727",
+"SRR3885728",
+"SRR3883618"]
+
+#Note: Four samples are discarded due to low mapping (leaf infected)
+
+SAMPLES4 = [
+#"SRR066373",
+#"SRR1311174",
+"SRR066374",
+#"SRR1311175",
+#"SRR342350",
+#"SRR342351",
+#"SRR066375",
+#"SRR1311176",
+#"SRR066376",
+#"SRR1311177"
+]
+
+SAMPLES5 = "SRR629688"
+
+READS1 = ["R1_001", "R2_001"]
+READS3 = "R1"
+
+DIR0 = "/fast/users/a1697274/snakemake/bioinformatics"
+DIR = DIR0+"/gene_model_protein"
+REFERENCES = DIR0+"/references"
+ENVS = DIR0+"/envs/default.yaml"
+LOGS = DIR+"/logs"
+GENE_MODEL = DIR+"/gene_model"
+ANNOTATION = DIR+"/annotation"
+COUNTS = DIR+"/counts"
+MAPPED = DIR+"/mapped_reads"
+MULTIQC = DIR+"/multiqc"
+BAM1 = MAPPED+"/paired_stranded_illumina"
+BAM2 = MAPPED+"/single_stranded_illumina"
+BAM3 = MAPPED+"/single_unstranded_illumina"
+BAM4 = MAPPED+"/single_unstranded_454"
+BAM5 = MAPPED+"/paired_unstranded_illumina"
+CLEAN1a = DIR0+"/paired_stranded_illumina/clean_reads/{SAMPLES}_R1_001.fastq.gz"
+CLEAN1b = DIR0+"/paired_stranded_illumina/clean_reads/{SAMPLES}_R2_001.fastq.gz"
+CLEAN2 = DIR0+"/single_stranded_illumina/clean_reads/{SAMPLES}_R1.fastq.gz"
+CLEAN3 = DIR0+"/single_unstranded_illumina/clean_reads/{SAMPLES}_R1.fastq.gz"
+CLEAN4 = DIR0+"/single_unstranded_454/supersuperclean_reads/{SAMPLES}_R1.fastq.gz"
+CLEAN5a = DIR0+"/paired_unstranded_illumina/clean_reads/{SAMPLES}_R1_001.fastq.gz"
+CLEAN5b = DIR0+"/paired_unstranded_illumina/clean_reads/{SAMPLES}_R2_001.fastq.gz"
+
+
+################
+# Pseudo-rules #
+################
+# By convention, the first rule should be called "all" and it's "input" defined as
+# the list of ALL the files you want the workflow to create. e.g.:
+rule all:
+	input:
+		GENE_MODEL+"/gene_model_RNA.gff3",
+		GENE_MODEL+"/transcript.fasta",
+		GENE_MODEL+"/transcript.fasta.transdecoder_dir/longest_orfs.pep",
+		GENE_MODEL+"/transcript.fasta.transdecoder_dir/longest_orfs.cds",
+		GENE_MODEL+"/transcript.fasta.transdecoder_dir/longest_orfs.gff3",
+		GENE_MODEL+"/transcript.fasta.transdecoder_dir/base_freqs.dat",
+		GENE_MODEL+"/transcript.fasta.gene_trans_map",
+		ANNOTATION+"/uniprot/uniprot_sprot.pep.phr",
+		ANNOTATION+"/uniprot/uniprot_sprot.pep.pin",
+		ANNOTATION+"/uniprot/uniprot_sprot.pep.psq",
+		ANNOTATION+"/blastp.outfmt6",
+		ANNOTATION+"/blastx.outfmt6",
+		ANNOTATION+"/pfam/Pfam-A.hmm.h3f",
+		ANNOTATION+"/pfam/Pfam-A.hmm.h3i",
+		ANNOTATION+"/pfam/Pfam-A.hmm.h3m",
+		ANNOTATION+"/pfam/Pfam-A.hmm.h3p",
+		ANNOTATION+"/TrinotatePFAM.out",
+		ANNOTATION+"/trinotate_annotation_report.xls",
+		ANNOTATION+"/go_annotations.txt",
+		GENE_MODEL+"/transcript.fasta.transdecoder.bed",
+		GENE_MODEL+"/transcript.fasta.transdecoder.cds",
+		GENE_MODEL+"/transcript.fasta.transdecoder.pep",
+		GENE_MODEL+"/transcript.fasta.transdecoder.gff3",
+		GENE_MODEL+"/gene_model_protein.gff3",
+		directory(DIR+"/index"),
+		expand(BAM1+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES1),
+		expand(BAM2+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES2),
+		expand(BAM3+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES3),
+		expand(BAM4+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES4),
+		expand(BAM5+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES5),
+		expand(BAM1+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES1),		
+		COUNTS+"/counts.out",
+		COUNTS+"/counts_2.out",
+		COUNTS+"/counts_3.out",		
+		MULTIQC+"/multiqc_report.html",
+		expand(BAM1+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES1),
+		expand(BAM2+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES2),
+		expand(BAM3+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES3),
+		expand(BAM4+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES4),
+		expand(BAM5+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES5),
+
+################
+# Rules Proper #
+################
+
+rule gtftofasta:
+	input:
+		DIR0+"/gene_model_RNA/gene_model/gene_model_RNA.gtf"
+	output:
+		GENE_MODEL+"/transcript.fasta"
+	conda:
+		ENVS
+	params:
+		REFERENCES+"/Plantago.fasta"
+	shell:
+		"""
+		gtf_genome_to_cdna_fasta.pl {input} {params} > {output}
+		"""
+
+rule gtftogff3:
+	input:
+		DIR0+"/gene_model_RNA/gene_model/gene_model_RNA.gtf"
+	output:
+		GENE_MODEL+"/gene_model_RNA.gff3"
+	conda:
+		ENVS
+	shell:
+		"""
+		gtf_to_alignment_gff3.pl {input} > {output}
+		"""
+	
+rule best_ORF:
+	input:
+		GENE_MODEL+"/transcript.fasta"
+	output:
+		file1 = GENE_MODEL+"/transcript.fasta.transdecoder_dir/longest_orfs.pep",
+		file2 = GENE_MODEL+"/transcript.fasta.transdecoder_dir/longest_orfs.cds",
+		file3 = GENE_MODEL+"/transcript.fasta.transdecoder_dir/longest_orfs.gff3",
+		file4 = GENE_MODEL+"/transcript.fasta.transdecoder_dir/base_freqs.dat"
+	conda:
+		ENVS
+	params:
+		directory(GENE_MODEL+"/transcript.fasta.transdecoder_dir")
+	shell:
+		"""
+		TransDecoder.LongOrfs -m 50 -t {input} --output_dir {params}
+		"""
+
+rule database_uniprot:
+	input:
+		ANNOTATION+"/uniprot/uniprot_sprot.pep"
+	output:
+		one = ANNOTATION+"/uniprot/uniprot_sprot.pep.phr",
+		two = ANNOTATION+"/uniprot/uniprot_sprot.pep.pin",
+		three = ANNOTATION+"/uniprot/uniprot_sprot.pep.psq"
+	conda:
+		ENVS
+	shell:
+		"""
+		makeblastdb -in {input} -dbtype prot
+		"""
+
+rule blastP:
+	input:
+		GENE_MODEL+"/transcript.fasta.transdecoder_dir/longest_orfs.pep"
+	output:
+		ANNOTATION+"/blastp.outfmt6"
+	conda:
+		ENVS
+	params:
+		ANNOTATION+"/uniprot/uniprot_sprot.pep"
+	shell:
+		"""
+		blastp -query {input} -db {params} -max_target_seqs 1 \
+		-outfmt 6 -evalue 1e-3 -num_threads 8 -out {output}
+		"""
+
+rule blastX:
+	input:
+		GENE_MODEL+"/transcript.fasta"
+	output:
+		ANNOTATION+"/blastx.outfmt6"
+	conda:
+		ENVS
+	params:
+		ANNOTATION+"/uniprot/uniprot_sprot.pep"
+	shell:
+		"""
+		blastx -query {input} -db {params} -max_target_seqs 1 \
+		-outfmt 6 -evalue 1e-3 -num_threads 8 -out {output}
+		"""
+
+rule hmmpress:
+	input:
+		ANNOTATION+"/pfam/Pfam-A.hmm"
+	output:
+		one = ANNOTATION+"/pfam/Pfam-A.hmm.h3f",
+		two = ANNOTATION+"/pfam/Pfam-A.hmm.h3i",
+		three = ANNOTATION+"/pfam/Pfam-A.hmm.h3m",
+		four = ANNOTATION+"/pfam/Pfam-A.hmm.h3p"
+	conda:
+		ENVS
+	shell:
+		"""
+		hmmpress {input}
+		"""
+
+rule hmmscan:
+	input:
+		GENE_MODEL+"/transcript.fasta.transdecoder_dir/longest_orfs.pep"
+	output:
+		ANNOTATION+"/TrinotatePFAM.out"
+	conda:
+		ENVS
+	params:
+		ANNOTATION+"/pfam/Pfam-A.hmm"
+	shell:
+		"""
+		hmmsearch --cpu 8 --domtblout {output} {params} {input}
+		"""
+
+rule predict_transcript:
+	input:
+		fasta = GENE_MODEL+"/transcript.fasta",
+		blastp = ANNOTATION+"/blastp.outfmt6",
+		pfam = ANNOTATION+"/TrinotatePFAM.out",
+	output:
+		o1 = GENE_MODEL+"/transcript.fasta.transdecoder.bed",
+		o2 = GENE_MODEL+"/transcript.fasta.transdecoder.cds",
+		o3 = GENE_MODEL+"/transcript.fasta.transdecoder.pep",
+		o4 = GENE_MODEL+"/transcript.fasta.transdecoder.gff3",
+	conda: 
+		ENVS
+	params:
+		dir = directory(GENE_MODEL+"/transcript.fasta.transdecoder_dir"),
+		o1 = DIR0+"/transcript.fasta.transdecoder.bed",
+		o2 = DIR0+"/transcript.fasta.transdecoder.cds",
+		o3 = DIR0+"/transcript.fasta.transdecoder.pep",
+		o4 = DIR0+"/transcript.fasta.transdecoder.gff3"
+	shell:
+		"""
+		TransDecoder.Predict -t {input.fasta} \
+		--retain_blastp_hits {input.blastp} --retain_pfam_hits {input.pfam} --output_dir {params.dir} &&
+		mv {params.o1} {output.o1}
+		mv {params.o2} {output.o2}
+		mv {params.o3} {output.o3}
+		mv {params.o4} {output.o4}
+		"""
+		
+rule predict_genome:
+	input:
+		one = GENE_MODEL+"/transcript.fasta.transdecoder.gff3",
+		two = GENE_MODEL+"/gene_model_RNA.gff3",
+		three = GENE_MODEL+"/transcript.fasta"
+	output:
+		GENE_MODEL+"/gene_model_protein.gff3"
+	conda:
+		ENVS
+	shell:
+		"""
+		cdna_alignment_orf_to_genome_orf.pl {input.one} {input.two} {input.three} > {output}
+		"""
+
+rule gene_trans_map:
+	input:
+		GENE_MODEL+"/transcript.fasta"
+	output:
+		GENE_MODEL+"/transcript.fasta.gene_trans_map"
+	shell:
+		"""
+		grep "^>" {input} \
+		| sed "s/^>//" \
+		| awk "BEGIN{{FS=" "; OFS="\\t"}};{{print\$2,\$1}}" \
+		> {output}
+		"""
+
+rule trinotate:
+	input:
+		map = GENE_MODEL+"/transcript.fasta.gene_trans_map",
+		file = ANNOTATION+"/Trinotate.sqlite",
+		fasta = GENE_MODEL+"/transcript.fasta",
+		pep = GENE_MODEL+"/transcript.fasta.transdecoder.pep",
+		blastp = ANNOTATION+"/blastp.outfmt6",
+		blastx = ANNOTATION+"/blastx.outfmt6",
+		pfam = ANNOTATION+"/TrinotatePFAM.out"
+	output:
+		ANNOTATION+"/trinotate_annotation_report.xls"
+	conda:
+		ENVS
+	shell:
+		"""
+		Trinotate {input.file} init --gene_trans_map {input.map} --transcript_fasta {input.fasta} \
+		--transdecoder_pep {input.pep} &&
+		Trinotate {input.file} LOAD_swissprot_blastp {input.blastp} &&
+		Trinotate {input.file} LOAD_swissprot_blastx {input.blastx} &&
+		Trinotate {input.file} LOAD_pfam {input.pfam} &&
+		Trinotate {input.file} report -E 1e-3 > {output}
+		"""
+
+rule GO:
+	input:
+		ANNOTATION+"/trinotate_annotation_report.xls"
+	output:
+		ANNOTATION+"/go_annotations.txt"
+	conda:
+		ENVS
+	shell:
+		"""
+		extract_GO_assignments_from_Trinotate_xls.pl --trans --include_ancestral_terms --Trinotate_xls {input} > {output}
+		"""
+
+rule star_index:
+	input:
+		fasta = REFERENCES+"/Plantago.fasta",
+		gff = GENE_MODEL+"/gene_model_protein.gff3"
+	output:
+		directory(DIR+"/index")
+	conda:
+		ENVS
+	log:
+		LOGS+"/star_index"
+	shell:
+		"""
+		mkdir {output} &&
+		STAR --runThreadN 8 \
+		--runMode genomeGenerate \
+		--genomeDir {output} \
+		--genomeSAindexNbases 12 \
+		--genomeFastaFiles {input.fasta} \
+		--sjdbGTFfile {input.gff} \
+		--sjdbGTFtagExonParentTranscript Parent \
+		--sjdbGTFfeatureExon exon \
+		--sjdbOverhang 520 \
+		> {log}
+		"""
+
+rule star_mapping1:
+	input:
+		file1 = CLEAN1a ,
+		file2 = CLEAN1b ,
+		index = directory(DIR+"/index"),
+		gff = GENE_MODEL+"/gene_model_protein.gff3"
+	output:
+		out1 = BAM1+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
+		out2 = BAM1+"/{SAMPLES}Log.final.out",
+		out3 = BAM1+"/{SAMPLES}Log.out",
+		out4 = BAM1+"/{SAMPLES}Log.progress.out",
+		out5 = BAM1+"/{SAMPLES}SJ.out.tab"
+	conda:
+		ENVS
+	params:
+		bam = BAM1 ,
+		outfile = BAM1+"/{SAMPLES}"
+	shell:
+		"""
+		mkdir --parents {params.bam} &&
+		STAR --runThreadN 8 \
+		--genomeDir {input.index} \
+		--readFilesIn {input.file1} {input.file2} \
+		--readFilesCommand gunzip -c \
+		--outFileNamePrefix {params.outfile} \
+		--outSAMtype BAM SortedByCoordinate \
+		--alignIntronMax 10000 \
+		--sjdbGTFfile {input.gff} \
+		--sjdbGTFtagExonParentTranscript Parent \
+		--sjdbGTFfeatureExon exon \
+		--outFilterScoreMinOverLread 0.8 \
+		--outSJfilterCountUniqueMin 5 1 1 1 \
+		--outSJfilterOverhangMin 35 20 20 20 \
+		--outFilterIntronMotifs RemoveNoncanonical
+		"""
+
+rule star_mapping2:
+	input:
+		file = CLEAN2 ,
+		index = directory(DIR+"/index"),
+		gff = GENE_MODEL+"/gene_model_protein.gff3"
+	output:
+		out1 = BAM2+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
+		out2 = BAM2+"/{SAMPLES}Log.final.out",
+		out3 = BAM2+"/{SAMPLES}Log.out",
+		out4 = BAM2+"/{SAMPLES}Log.progress.out",
+		out5 = BAM2+"/{SAMPLES}SJ.out.tab"
+	conda:
+		ENVS
+	params:
+		bam = BAM2 ,
+		outfile = BAM2+"/{SAMPLES}"
+	shell:
+		"""
+		mkdir --parents {params.bam} &&
+		STAR --runThreadN 8 \
+		--genomeDir {input.index} \
+		--readFilesIn {input.file} \
+		--readFilesCommand gunzip -c \
+		--outFileNamePrefix {params.outfile} \
+		--outSAMtype BAM SortedByCoordinate \
+		--alignIntronMax 10000 \
+		--sjdbGTFfile {input.gff} \
+		--sjdbGTFtagExonParentTranscript Parent \
+		--sjdbGTFfeatureExon exon \
+		--outFilterScoreMinOverLread 0.9 \
+		--outSJfilterCountUniqueMin 5 1 1 1 \
+		--outSJfilterOverhangMin 35 20 20 20 \
+		--outFilterIntronMotifs RemoveNoncanonical
+		"""
+
+rule star_mapping3:
+	input:
+		file = CLEAN3 ,
+		index = directory(DIR+"/index"),
+		gff = GENE_MODEL+"/gene_model_protein.gff3"
+	output:
+		out1 = BAM3+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
+		out2 = BAM3+"/{SAMPLES}Log.final.out",
+		out3 = BAM3+"/{SAMPLES}Log.out",
+		out4 = BAM3+"/{SAMPLES}Log.progress.out",
+		out5 = BAM3+"/{SAMPLES}SJ.out.tab"
+	conda:
+		ENVS
+	params:
+		bam = BAM3 ,
+		outfile = BAM3+"/{SAMPLES}"
+	shell:
+		"""
+		mkdir --parents {params.bam} &&
+		STAR --runThreadN 8 \
+		--genomeDir {input.index} \
+		--readFilesIn {input.file} \
+		--readFilesCommand gunzip -c \
+		--outFileNamePrefix {params.outfile} \
+		--outSAMtype BAM SortedByCoordinate \
+		--alignIntronMax 10000 \
+		--sjdbGTFfile {input.gff} \
+		--sjdbGTFtagExonParentTranscript Parent \
+		--sjdbGTFfeatureExon exon \
+		--outFilterScoreMinOverLread 0.8 \
+		--outSJfilterCountUniqueMin 5 1 1 1 \
+		--outSJfilterOverhangMin 35 20 20 20 \
+		--outFilterIntronMotifs RemoveNoncanonical \
+		"""
+
+rule star_mapping4:
+	input:
+		file = CLEAN4 ,
+		index = directory(DIR+"/index"),
+		gff = GENE_MODEL+"/gene_model_protein.gff3"
+	output:
+		out1 = BAM4+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
+		out2 = BAM4+"/{SAMPLES}Log.final.out",
+		out3 = BAM4+"/{SAMPLES}Log.out",
+		out4 = BAM4+"/{SAMPLES}Log.progress.out",
+		out5 = BAM4+"/{SAMPLES}SJ.out.tab"
+	conda:
+		ENVS
+	params:
+		bam = BAM4 ,
+		outfile = BAM4+"/{SAMPLES}"
+	shell:
+		"""
+		mkdir --parents {params.bam} &&
+		STAR --runThreadN 8 \
+		--genomeDir {input.index} \
+		--readFilesIn {input.file} \
+		--readFilesCommand gunzip -c \
+		--outFileNamePrefix {params.outfile} \
+		--outSAMtype BAM SortedByCoordinate \
+		--alignIntronMax 10000 \
+		--sjdbGTFfile {input.gff} \
+		--sjdbGTFtagExonParentTranscript Parent \
+		--sjdbGTFfeatureExon exon \
+		--outFilterScoreMinOverLread 0.9 \
+		--outSJfilterCountUniqueMin 5 1 1 1 \
+		--outSJfilterOverhangMin 35 20 20 20 \
+		--outFilterIntronMotifs RemoveNoncanonical \
+		"""
+
+rule star_mapping5:
+	input:
+		file1 = CLEAN5a ,
+		file2 = CLEAN5b ,
+		index = directory(DIR+"/index"),
+		gff = GENE_MODEL+"/gene_model_protein.gff3"
+	output:
+		out1 = BAM5+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
+		out2 = BAM5+"/{SAMPLES}Log.final.out",
+		out3 = BAM5+"/{SAMPLES}Log.out",
+		out4 = BAM5+"/{SAMPLES}Log.progress.out",
+		out5 = BAM5+"/{SAMPLES}SJ.out.tab"
+	conda:
+		ENVS
+	params:
+		bam = BAM5 ,
+		outfile = BAM5+"/{SAMPLES}"
+	shell:
+		"""
+		mkdir --parents {params.bam} &&
+		STAR --runThreadN 8 \
+		--genomeDir {input.index} \
+		--readFilesIn {input.file1} {input.file2} \
+		--readFilesCommand gunzip -c \
+		--outFileNamePrefix {params.outfile} \
+		--outSAMtype BAM SortedByCoordinate \
+		--alignIntronMax 10000 \
+		--sjdbGTFfile {input.gff} \
+		--sjdbGTFtagExonParentTranscript Parent \
+		--sjdbGTFfeatureExon exon \
+		--outFilterScoreMinOverLread 0.9 \
+		--outSJfilterCountUniqueMin 5 1 1 1 \
+		--outSJfilterOverhangMin 35 20 20 20 \
+		--outFilterIntronMotifs RemoveNoncanonical \
+		"""
+
+rule sort:
+	input:
+		BAM1+"/{SAMPLE}.bam",
+	output:
+		BAM1+"/{SAMPLE}.sorted.bam"
+	conda:
+		ENVS
+	params:
+		BAM1+"/{SAMPLE}.sorted"
+	shell:
+		"""
+		samtools sort -l 9 -n -T {params} -o {output} {input}
+		"""
+
+rule counts:
+	input:
+		bam = expand(BAM1+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES1),
+		gff = GENE_MODEL+"/gene_model_protein.gff3",
+	output:
+		COUNTS+"/counts.out",
+	conda:
+		ENVS
+	log:
+		LOGS+"/counts.summary"
+	params:
+		COUNTS
+	shell:
+		"""
+		featureCounts -t exon -g Parent -f -O -s 2 -p -T 5 -F GFF -a {input.gff} -o {output} {input.bam} \
+		> {log}
+		"""
+
+rule counts_2:
+	input:
+		bam = expand(BAM1+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES1),
+		gff = GENE_MODEL+"/gene_model_protein.gff3",
+	output:
+		COUNTS+"/counts_2.out",
+	conda:
+		ENVS
+	log:
+		LOGS+"/counts_2.summary"
+	params:
+		COUNTS
+	shell:   
+		"""
+		featureCounts -Q 10 -t exon -g Parent -O --fracOverlap 1 -s 2 -p -T 5 -F GFF -a {input.gff} -o {output} {input.bam} \
+		> {log}
+		"""
+
+rule counts_3:
+	input:
+		bam = expand(BAM1+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES1),
+		gff = GENE_MODEL+"/gene_model_protein.gff3",
+	output:
+		COUNTS+"/counts_3.out",
+	conda:
+		ENVS
+	log:
+		LOGS+"/counts_3.summary"
+	params:                
+		COUNTS        
+	shell:                
+		"""
+		featureCounts -Q 10 -t gene -g ID -O --fracOverlap 1 -s 2 -p -T 5 -F GFF -a {input.gff} -o {output} {input.bam} \
+		> {log}
+		"""
+
+rule multiqc_all:
+	input:
+		log1 = expand(BAM1+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES1),
+		log2 = expand(BAM2+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES2),
+		log3 = expand(BAM3+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES3),
+		log4 = expand(BAM4+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES4),
+		log5 = expand(BAM5+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES5),
+	output:
+		MULTIQC+"/multiqc_report.html"
+	conda:
+		ENVS
+	log:
+		LOGS+"/multiqc_report"
+	params:
+		indir1 = BAM1 ,
+		indir2 = BAM2 ,
+		indir3 = BAM3 ,
+		indir4 = BAM4 ,
+		indir5 = BAM5 ,
+		outdir = MULTIQC
+	shell:
+		"""
+		multiqc {params.indir1} {params.indir2} {params.indir3} {params.indir4} {params.indir5} -o {params.outdir}
+		2> {log}
+		"""
+
+rule samtools_bai1:
+	input:
+		BAM1+"/{SAMPLE}.bam"
+	output:
+		BAM1+"/{SAMPLE}.bam.bai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule samtools_bai2:
+	input:
+		BAM2+"/{SAMPLE}.bam"
+	output:
+		BAM2+"/{SAMPLE}.bam.bai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule samtools_bai3:
+	input:
+		BAM3+"/{SAMPLE}.bam"
+	output:
+		BAM3+"/{SAMPLE}.bam.bai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule samtools_bai4:
+	input:
+		BAM4+"/{SAMPLE}.bam"
+	output:
+		BAM4+"/{SAMPLE}.bam.bai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule samtools_bai5:
+	input:
+		BAM5+"/{SAMPLE}.bam"
+	output:
+		BAM5+"/{SAMPLE}.bam.bai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
