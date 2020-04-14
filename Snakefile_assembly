@@ -1,0 +1,318 @@
+# A global singularity image to be used for all jobs - need to specify --use-singularity and have singularity available on the command line
+# This image already contains the bioinformatic tools we will be using singularity:
+#"file:///shared/.singularity/nextflow-embl-abr-webinar.simg",
+"docker://rsuchecki/nextflow-embl-abr-webinar"
+
+
+SAMPLES=[
+"m54078_170831_060817.subreads",
+"m54078_170831_160707.subreads",
+"m54078_170901_080645.subreads",
+"m54078_170901_180552.subreads",
+"m54078_170902_041524.subreads",
+"m54078_170902_142504.subreads",
+"m54078_170903_003441.subreads"
+]
+
+SAMPLE_HiC=["Povata-HiC_combined"]
+
+DIR0 = "/fast/users/a1697274/snakemake/bioinformatics"
+DIR = DIR0+"/assembly"
+INDEX_PAC = DIR+"/index_PAC"
+INDEX_HiC = DIR+"/index_HiC"
+RAW_PAC = DIR+"/plantago_genome_sequences/sequel"
+RAW_HiC = DIR+"/plantago_genome_sequences/HiC"
+RAW_FASTQ = DIR+"/raw_reads"
+QC1 = DIR+"/qc_raw"
+MULTIQC1 = DIR+"/multiqc_raw"
+ENVS = DIR0+"/envs/assembly.yaml"
+LOGS = DIR+"/logs"
+MAPPED = DIR+"/mapped_reads"
+MAPPED_HiC = DIR+"/mapped_reads_HiC"
+
+################
+# Pseudo-rules #
+################
+# By convention, the first rule should be called "all" and it's "input" defined as
+# the list of ALL the files you want the workflow to create. e.g.:
+rule all:
+	input:
+		INDEX_PAC+"/Plantago.fasta.mmi",
+		INDEX_HiC+"/Plantago.fasta.amb",
+		expand(RAW_FASTQ+"/{SAMPLE}.fastq.gz", SAMPLE=SAMPLES),
+		expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES),
+		MULTIQC1+"/multiqc_report.html",
+		expand(MAPPED+"/{SAMPLE}.bam", SAMPLE=SAMPLES),
+		MAPPED+"/merge.bam",
+		expand(MAPPED+"/{SAMPLE}.bam.bai", SAMPLE=SAMPLES),
+		MAPPED+"/merge.bam.bai",
+		expand(MAPPED+"/{SAMPLE}.cram", SAMPLE=SAMPLES),
+		MAPPED+"/merge.cram",
+		expand(MAPPED+"/{SAMPLE}.cram.crai", SAMPLE=SAMPLES),
+		MAPPED+"/merge.cram.crai",
+		expand(MAPPED_HiC+"/{SAMPLE}.bam", SAMPLE=SAMPLE_HiC),
+		expand(MAPPED_HiC+"/{SAMPLE}.bam.bai", SAMPLE=SAMPLE_HiC),
+		expand(MAPPED_HiC+"/{SAMPLE}.cram", SAMPLE=SAMPLE_HiC),
+		expand(MAPPED_HiC+"/{SAMPLE}.cram.crai", SAMPLE=SAMPLE_HiC),
+
+################
+# Rules Proper #
+################
+
+rule minimap2_index:
+	input:
+		DIR0+"/Plantago.fasta"
+	output:
+		INDEX_PAC+"/Plantago.fasta.mmi"
+	conda:
+		ENVS
+	log:
+		LOGS+"/minimap2_index"
+	shell:
+		"""
+		minimap2 -d {output} {input}
+		2> {log}
+		"""
+
+rule bwa_index:
+	input:
+		INDEX_HiC+"/Plantago.fasta"
+	output:
+		o1 = INDEX_HiC+"/Plantago.fasta.amb",
+		o2 = INDEX_HiC+"/Plantago.fasta.ann",
+		o3 = INDEX_HiC+"/Plantago.fasta.bwt",
+		o4 = INDEX_HiC+"/Plantago.fasta.pac",
+		o5 = INDEX_HiC+"/Plantago.fasta.sa",
+	conda:
+		ENVS
+	shell:
+		"""
+		bwa index -a bwtsw {input} > {output}
+		"""
+		
+rule bam2fastq:
+	input:
+		RAW_PAC+"/{SAMPLE}.bam"
+	output:
+		RAW_FASTQ+"/{SAMPLE}.fastq.gz"
+	conda:
+		ENVS
+	log:
+		LOGS+"/raw_fastq/{SAMPLE}"
+	params:
+		RAW_FASTQ+"/{SAMPLE}"
+	shell:
+		"""
+		bam2fastq -c 9 {input} -o {params}
+		> {log}
+		"""
+
+rule fastqc_raw:
+	input:
+		RAW_FASTQ+"/{SAMPLE}.fastq.gz"
+	output:
+		zip = QC1+"/{SAMPLE}_fastqc.zip",
+		html = QC1+"/{SAMPLE}_fastqc.html"
+	conda:
+		ENVS
+	log:
+		LOGS+"/fastqc_raw/{SAMPLE}"
+	params: 
+		QC1
+	shell:
+		"""
+		fastqc -o {params} --threads 2 {input}
+		2> {log}
+		"""
+
+rule multiqc_raw:
+	input:
+		expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES)
+	output:
+		MULTIQC1+"/multiqc_report.html"
+	conda:
+		ENVS
+	log:
+		LOGS+"/multiqc_raw/multiqc_report"
+	params:
+		indir = QC1 ,
+		outdir = MULTIQC1
+	shell:
+		"""
+		multiqc {params.indir} -o {params.outdir}
+		2> {log}
+		"""
+
+rule minimap2_mapping:
+	input:
+		data = RAW_FASTQ+"/{SAMPLE}.fastq.gz",
+		index = INDEX_PAC+"/Plantago.fasta.mmi",
+	output:
+		MAPPED+"/{SAMPLE}.bam",
+	conda:
+		ENVS
+	shell:
+		"""
+		time minimap2 \
+		-ax map-pb \
+		-t 2 {input.index} {input.data} \
+		| samtools view -F 4 -u \
+		| samtools sort \
+		--threads 2 -l 7 \
+		-o {output}
+		"""
+
+rule samtools_merge:
+	input:
+		expand(MAPPED+"/{SAMPLE}.bam", SAMPLE=SAMPLES)
+	output:
+		MAPPED+"/merge.bam"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools merge -l 9 {params} {output} {input}
+		"""
+
+rule samtools_bai:
+	input:
+		MAPPED+"/{SAMPLE}.bam"
+	output:
+		MAPPED+"/{SAMPLE}.bam.bai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule samtools_bai_merge:
+	input:
+		MAPPED+"/merge.bam"
+	output:
+		MAPPED+"/merge.bam.bai"
+	conda:
+		ENVS
+	params:   
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule samtools_cram:
+	input:
+		bam = MAPPED+"/{SAMPLE}.bam",
+		reference = DIR0+"/Plantago.fasta"
+	output:
+		MAPPED+"/{SAMPLE}.cram"
+	conda:
+		ENVS
+	shell:
+		"""
+		samtools view -T {input.reference} -C -o {output} {input.bam}
+		"""
+
+rule samtools_cram_merge:
+	input:
+		bam = MAPPED+"/merge.bam",
+		reference = DIR0+"/Plantago.fasta"
+	output:
+		MAPPED+"/merge.cram"
+	conda:
+		ENVS
+	shell:
+		"""
+		samtools view -T {input.reference} -C -o {output} {input.bam}
+		"""
+
+rule samtools_cram_HiC:
+	input:
+		bam = MAPPED_HiC+"/{SAMPLE}.bam",
+		reference = INDEX_HiC+"/Plantago.fasta"
+	output:
+		MAPPED_HiC+"/{SAMPLE}.cram"
+	conda:
+		ENVS
+	shell:
+		"""
+		samtools view -T {input.reference} -C -o {output} {input.bam}
+		"""
+
+rule samtools_crai:
+	input:
+		MAPPED+"/{SAMPLE}.cram"
+	output:
+		MAPPED+"/{SAMPLE}.cram.crai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule samtools_crai_merge:
+	input:
+		MAPPED+"/merge.cram"
+	output:
+		MAPPED+"/merge.cram.crai"
+	conda:
+		ENVS
+	params:   
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule samtools_crai_HiC:
+	input:
+		MAPPED_HiC+"/{SAMPLE}.cram"
+	output:
+		MAPPED_HiC+"/{SAMPLE}.cram.crai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule bwa_HiC:
+	input:
+		R1 = RAW_HiC+"/{SAMPLE}_R1.fastq.gz",
+		R2 = RAW_HiC+"/{SAMPLE}_R2.fastq.gz",
+		reference = INDEX_HiC+"/Plantago.fasta",
+	output:
+		MAPPED_HiC+"/{SAMPLE}.bam",
+	conda:
+		ENVS
+	shell:
+		"""
+		bwa mem -5SP {input.reference} {input.R1} {input.R2} \
+		| samtools view -S -h -b -F 2316 \
+		| samtools sort \
+		--threads 2 -l 7 \
+		-o {output}
+		"""
+
+rule samtools_bai_HiC:
+	input:
+		MAPPED_HiC+"/{SAMPLE}.bam"
+	output:
+		MAPPED_HiC+"/{SAMPLE}.bam.bai"
+	conda:
+		ENVS
+	params:   
+		"" 
+	shell:
+ 		"""
+		samtools index {params} {input} {output}
+		"""
