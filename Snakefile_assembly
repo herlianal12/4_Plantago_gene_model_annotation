@@ -16,8 +16,7 @@ SAMPLES=[
 
 SAMPLE_HiC=["Povata-HiC_combined"]
 
-DIR0 = "/fast/users/a1697274/snakemake/bioinformatics"
-DIR = DIR0+"/assembly"
+DIR = "assembly"
 INDEX_PAC = DIR+"/index_PAC"
 INDEX_HiC = DIR+"/index_HiC"
 RAW_PAC = DIR+"/plantago_genome_sequences/sequel"
@@ -25,7 +24,7 @@ RAW_HiC = DIR+"/plantago_genome_sequences/HiC"
 RAW_FASTQ = DIR+"/raw_reads"
 QC1 = DIR+"/qc_raw"
 MULTIQC1 = DIR+"/multiqc_raw"
-ENVS = DIR0+"/envs/assembly.yaml"
+ENVS = "envs/assembly.yaml"
 LOGS = DIR+"/logs"
 MAPPED = DIR+"/mapped_reads"
 MAPPED_HiC = DIR+"/mapped_reads_HiC"
@@ -58,10 +57,9 @@ rule all:
 ################
 # Rules Proper #
 ################
-
 rule minimap2_index:
 	input:
-		DIR0+"/Plantago.fasta"
+		"Plantago.fasta.gz"
 	output:
 		INDEX_PAC+"/Plantago.fasta.mmi"
 	conda:
@@ -207,7 +205,7 @@ rule samtools_bai_merge:
 rule samtools_cram:
 	input:
 		bam = MAPPED+"/{SAMPLE}.bam",
-		reference = DIR0+"/Plantago.fasta"
+		reference = "Plantago.fasta"
 	output:
 		MAPPED+"/{SAMPLE}.cram"
 	conda:
@@ -220,7 +218,7 @@ rule samtools_cram:
 rule samtools_cram_merge:
 	input:
 		bam = MAPPED+"/merge.bam",
-		reference = DIR0+"/Plantago.fasta"
+		reference = "Plantago.fasta"
 	output:
 		MAPPED+"/merge.cram"
 	conda:
