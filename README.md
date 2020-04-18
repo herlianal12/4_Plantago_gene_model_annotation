@@ -1,4 +1,4 @@
-# Genome Assembly and RNAseq Analysis Workflow in Plantago ovata
+# Genome Assembly and RNAseq Analysis Workflows in Plantago ovata
 
 This repository is aimed to document, develop, and test genome assembly and RNAseq pipelines. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtained in this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
 
@@ -26,6 +26,7 @@ mkdir -p single_unstranded_454/raw_reads
 mkdir -p paired_unstranded_illumina/raw_reads
 mkdir database_rrna
 mkdir references
+mkdir -p gene_model_RNA/gene_model
 mkdir -p gene_model_protein/annotation/pfam
 mkdir -p gene_model_protein/annotation/uniprot
 mkdir -p gene_model_compared/gene_model/rnacentral
@@ -278,6 +279,13 @@ wget "http://combio.pl/rrna/static/download/Plastids.fasta" \
 
 wget "http://combio.pl/rrna/static/download/Eukaryota.fasta" \
 -O database_rrna/Eukaryota.fasta
+
+```
+```bash
+# Get a list of transcript paths from different RNAseq groups
+
+wget "https://universityofadelaide.box.com/shared/static/eek5fbz0uzpa6yl2wbe4diqumq0oprag.txt" \
+-O gene_model_RNA/gene_model/assemblies.txt
 
 ```
 
