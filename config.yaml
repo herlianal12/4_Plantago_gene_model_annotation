@@ -1,0 +1,329 @@
+# Listing Sample Names, Directory and File Paths
+
+
+## List of genome sequences from PacBio and HiC data
+
+SAMPLES_PAC: [
+"m54078_170831_060817.subreads", 
+"m54078_170831_160707.subreads",
+"m54078_170901_080645.subreads", 
+"m54078_170901_180552.subreads",
+"m54078_170902_041524.subreads", 
+"m54078_170902_142504.subreads",
+"m54078_170903_003441.subreads"]
+
+SAMPLES_HiC: ["Povata-HiC_combined"]
+
+## List of RNAseq data from paired-stranded-illumina reads. SAMPLES and SAMPLES1 consist of the same files, however two files (S5 & S15) are discarded or not listed in SAMPLES1 due to high rate contamination (>90%)
+
+SAMPLES: [
+"WT_8_DPA_4_S1", 
+"WT_8_DPA_5_S2", 
+"WT_8_DPA_6_S3", 
+"WT_10_DPA_4_S4",
+"WT_10_DPA_5_S5", 
+"WT_10_DPA_6_S6", 
+"WT_12_DPA_4_S7", 
+"WT_12_DPA_5_S8",
+"WT_12_DPA_6_S9", 
+"WT_14_DPA_4_S10", 
+"WT_14_DPA_5_S11", 
+"WT_14_DPA_6_S12",
+"1078_6_8_DPA_2_S13", 
+"1078_6_8_DPA_3_S14", 
+"1078_6_8_DPA_4_S15", 
+"1078_6_10_DPA_1_S16",
+"1078_6_10_DPA_3_S17", 
+"1078_6_10_DPA_4_S18", 
+"1078_6_12_DPA_6_S19", 
+"1078_6_12_DPA_4_S20",
+"1078_6_12_DPA_5_S21", 
+"1078_6_14_DPA_4_S22", 
+"1078_6_14_DPA_5_S23", 
+"1078_6_14_DPA_1_S24"]
+
+
+SAMPLES1: [
+"WT_8_DPA_4_S1", 
+"WT_8_DPA_5_S2", 
+"WT_8_DPA_6_S3", 
+"WT_10_DPA_4_S4",
+"WT_10_DPA_6_S6", 
+"WT_12_DPA_4_S7", 
+"WT_12_DPA_5_S8", 
+"WT_12_DPA_6_S9",
+"WT_14_DPA_4_S10", 
+"WT_14_DPA_5_S11", 
+"WT_14_DPA_6_S12", 
+"1078_6_8_DPA_2_S13",
+"1078_6_8_DPA_3_S14", 
+"1078_6_10_DPA_1_S16", 
+"1078_6_10_DPA_3_S17",
+"1078_6_10_DPA_4_S18",
+"1078_6_12_DPA_6_S19", 
+"1078_6_12_DPA_4_S20", 
+"1078_6_12_DPA_5_S21", 
+"1078_6_14_DPA_4_S22",
+"1078_6_14_DPA_5_S23", 
+"1078_6_14_DPA_1_S24"]
+
+
+## List of RNAseq reads from single-stranded-illumina reads (SAMPLES2 & SAMPLES2a). Four samples are discarded due to low mapping percentages in SAMPLES2a.
+
+SAMPLES2: [
+"7_C7N8UANXX_GAGTGG_L006",
+"8_C7N8UANXX_ACTGAT_L006",
+"9_C7N8UANXX_ATTCCT_L006",
+"10_C7N8UANXX_ATCACG_L006",
+"7_C7N8UANXX_GAGTGG_L007",
+"8_C7N8UANXX_ACTGAT_L007",
+"9_C7N8UANXX_ATTCCT_L007",
+"10_C7N8UANXX_ATCACG_L007",
+"SRR5434206",
+"SRR5434207",
+"SRR5434208",
+"SRR5434209",
+"SRR5434210",
+"SRR5434211",
+"SRR5434212",
+"SRR5434213"]
+
+SAMPLES2a: [
+"7_C7N8UANXX_GAGTGG_L006",
+"8_C7N8UANXX_ACTGAT_L006",
+"9_C7N8UANXX_ATTCCT_L006",
+"10_C7N8UANXX_ATCACG_L006",
+"7_C7N8UANXX_GAGTGG_L007",
+"8_C7N8UANXX_ACTGAT_L007",
+"9_C7N8UANXX_ATTCCT_L007",
+"10_C7N8UANXX_ATCACG_L007",
+"SRR5434206",
+"SRR5434207",
+"SRR5434210",
+"SRR5434211"]
+
+## List of RNAseq data from single-unstranded-illumina reads (SAMPLES3)
+
+SAMPLES3: [
+"JPo_1_C5697ACXX_CCGTCC_L005",
+"JPo_2_C5697ACXX_GTCCGC_L005",
+"JPo_3_C5697ACXX_GTGAAA_L005",
+"JPo_4_C5697ACXX_GTGGCC_L005",
+"SRR3883619",
+"SRR3883620",
+"SRR3883621",
+"SRR3883622",
+"SRR3885726",
+"SRR3885727", 
+"SRR3885728",
+"SRR3883618"]
+
+## List of RNAseq data from single-unstranded-454 reads (SAMPLES4 & SAMPLES4a). Only one file from this group is included in SAMPLES4a.
+## This is due to high contamination rates and low mapping percentages.
+
+SAMPLES4: [
+"SRR066373",
+"SRR1311174",
+"SRR066374",
+"SRR1311175",
+"SRR342350",
+"SRR342351",
+"SRR066375",
+"SRR1311176",
+"SRR066376",
+"SRR1311177",
+]
+
+SAMPLES4a: "SRR066374"
+
+## One file name of RNAseq data from paired-unstranded-illumina reads (SAMPLES5)
+
+SAMPLES5: "SRR629688"
+
+
+## File name extensions (READS1 or READS2)
+
+READS1: ["R1_001", "R2_001"]
+READS2: "R1"
+
+
+## List of non coding group
+
+NON_CODING: [ "lncRNA", "lncRNA_intergenic", "lncRNA_intronicexonic", "lncRNA_antisense",
+"sncRNA", "sncRNA_intergenic", "sncRNA_intronicexonic", "sncRNA_antisense"]
+
+##########################################################################################
+## Directories or files that are used in all Snakefiles 
+
+ENVS:            "envs/envs.yaml"
+LOGS:            "logs"
+ADAPTERS:        "all_adapters.fa"
+RRNA:            "database_rrna"
+REFERENCES:      "references"
+
+##########################################################################################
+## All working directories that are specific for each Snakefile
+
+DIR1: "assembly"
+DIR2: "paired_stranded_illumina"
+DIR3: "single_stranded_illumina"
+DIR4: "single_unstranded_illumina"
+DIR5: "single_unstranded_454"
+DIR6: "paired_unstranded_illumina"
+DIR7: "gene_model_RNA"
+DIR8: "gene_model_protein"
+DIR9: "gene_model_compared"
+
+##########################################################################################
+## Directories for Plantago genome data
+
+INDEX_PAC:  "assembly/index_PAC"
+INDEX_HiC:  "assembly/index_HiC"
+RAW_PAC:    "assembly/plantago_genome_sequences/sequel"
+RAW_HiC:    "assembly/plantago_genome_sequences/HiC"
+RAW1:       "assembly/raw_reads"
+QC1:        "assembly/qc_raw"
+MULTIQC1:   "assembly/multiqc_raw"
+MAPPED_PAC: "assembly/mapped_reads"
+MAPPED_HiC: "assembly/mapped_reads_HiC"
+
+#########################################################################################
+## Directories for paired-stranded-illumina rna seq data
+
+RAW2:             "paired_stranded_illumina/raw_reads"
+QC2_1:            "paired_stranded_illumina/raw_reads/qc"
+MULTIQC2_1:       "paired_stranded_illumina/raw_reads/multiqc"
+TRIMMED2_1:       "paired_stranded_illumina/trimmed_reads"
+QC2_2:            "paired_stranded_illumina/trimmed_reads/qc"
+MULTIQC2_2:       "paired_stranded_illumina/trimmed_reads/multiqc"
+CLEAN2:           "paired_stranded_illumina/clean_reads"
+QC2_3:            "paired_stranded_illumina/clean_reads/qc"
+MULTIQC2_3:       "paired_stranded_illumina/clean_reads/qc_file/multiqc"
+MULTIQC2_4:       "paired_stranded_illumina/clean_reads/stat_file/multiqc"
+MAPPED2:          "paired_stranded_illumina/mapped_reads"
+MULTIQC2_5:       "paired_stranded_illumina/mapped_reads/multiqc"
+MULTIQC2_6:       "paired_stranded_illumina/mapped_reads/multiqc_all"
+CUFFLINK2:        "paired_stranded_illumina/mapped_reads/cufflink"
+MERGED2:          "paired_stranded_illumina/mapped_reads/cufflink/merged"
+
+
+#########################################################################################
+## Directories for single-stranded-illumina rna seq data
+
+RAW3:             "single_stranded_illumina/raw_reads"
+QC3_1:            "single_stranded_illumina/raw_reads/qc"
+MULTIQC3_1:       "single_stranded_illumina/raw_reads/multiqc"
+TRIMMED3:         "single_stranded_illumina/trimmed_reads"
+QC3_2:            "single_stranded_illumina/trimmed_reads/qc"
+MULTIQC3_2:       "single_stranded_illumina/trimmed_reads/multiqc"
+CLEAN3:           "single_stranded_illumina/clean_reads"
+QC3_3:            "single_stranded_illumina/clean_reads/qc"
+MULTIQC3_3:       "single_stranded_illumina/clean_reads/multiqc"
+MAPPED3:          "single_stranded_illumina/mapped_reads"
+MULTIQC3_4:       "single_stranded_illumina/mapped_reads/multiqc"
+MULTIQC3_5:       "single_stranded_illumina/multiqc_all"
+CUFFLINK3:        "single_stranded_illumina/cufflink"
+
+
+#########################################################################################
+## Directories for single-unstranded-illumina rna seq data
+
+RAW4:             "single_unstranded_illumina/raw_reads"
+QC4_1:            "single_unstranded_illumina/raw_reads/qc"
+MULTIQC4_1:       "single_unstranded_illumina/raw_reads/multiqc"
+TRIMMED4:         "single_unstranded_illumina/trimmed_reads"
+QC4_2:            "single_unstranded_illumina/trimmed_reads/qc"
+MULTIQC4_2:       "single_unstranded_illumina/trimmed_reads/multiqc"
+CLEAN4:           "single_unstranded_illumina/clean_reads"
+QC4_3:            "single_unstranded_illumina/clean_reads/qc"
+MULTIQC4_3:       "single_unstranded_illumina/clean_reads/multiqc"
+MAPPED4:          "single_unstranded_illumina/mapped_reads"
+MULTIQC4_4:       "single_unstranded_illumina/mapped_reads/multiqc"
+MULTIQC4_5:       "single_unstranded_illumina/multiqc_all"
+CUFFLINK4:        "single_unstranded_illumina/cufflink"
+
+#########################################################################################
+## Directories for single-unstranded-454 rna seq data
+
+RAW5:             "single_unstranded_454/raw_reads"
+QC5_1:            "single_unstranded_454/raw_reads/qc"
+MULTIQC5_1:       "single_unstranded_454/raw_reads/multiqc"
+TRIMMED5:         "single_unstranded_454/trimmed_reads"
+QC5_2:            "single_unstranded_454/trimmed_reads/qc"
+MULTIQC5_2:       "single_unstranded_454/trimmed_reads/multiqc"
+CLEAN5:           "single_unstranded_454/clean_reads"
+SUPERCLEAN:       "single_unstranded_454/superclean_reads"
+SUPERSUPERCLEAN:  "single_unstranded_454/supersuperclean_reads"
+QC5_3:            "single_unstranded_454/supersuperclean_reads/qc"
+MULTIQC5_3:       "single_unstranded_454/supersuperclean_reads/multiqc"
+MAPPED5:          "single_unstranded_454/mapped_reads"
+MULTIQC5_4:       "single_unstranded_454/mapped_reads/multiqc"
+MULTIQC5_5:       "single_unstranded_454/multiqc_all"
+CUFFLINK5:        "single_unstranded_454/cufflink"
+
+#########################################################################################
+## Directories for paired-unstranded-illumina rna seq data
+
+RAW6:             "paired_unstranded_illumina/raw_reads"
+QC6_1:            "paired_unstranded_illumina/raw_reads/qc"
+MULTIQC6_1:       "paired_unstranded_illumina/raw_reads/multiqc"
+TRIMMED6:         "paired_unstranded_illumina/trimmed_reads"
+QC6_2:            "paired_unstranded_illumina/trimmed_reads/qc"
+MULTIQC6_2:       "paired_unstranded_illumina/trimmed_reads/multiqc"
+CLEAN6:           "paired_unstranded_illumina/clean_reads"
+MULTIQC6_3:       "paired_unstranded_illumina/clean_reads/multiqc"
+MAPPED6:          "paired_unstranded_illumina/mapped_reads"
+MULTIQC6_4:       "paired_unstranded_illumina/mapped_reads/multiqc"
+MULTIQC6_5:       "paired_unstranded_illumina/multiqc_all"
+CUFFLINK6:        "paired_unstranded_illumina/cufflink"
+
+
+#########################################################################################
+## Directories for generating gene model (RNA)
+
+GENE_MODEL7:      "gene_model_RNA/gene_model"
+COUNTS7:          "gene_model_RNA/counts"
+MULTIQC7:         "gene_model_RNA/multiqc_all"
+MAPPED7:          "gene_model_RNA/mapped_reads"
+BAM7_1:           "gene_model_RNA/mapped_reads/paired_stranded_illumina"
+BAM7_2:           "gene_model_RNA/mapped_reads/single_stranded_illumina"
+BAM7_3:           "gene_model_RNA/mapped_reads/single_unstranded_illumina"
+BAM7_4:           "gene_model_RNA/mapped_reads/single_unstranded_454"
+BAM7_5:           "gene_model_RNA/mapped_reads/paired_unstranded_illumina"
+
+FASTQ_CLEAN1a:    "paired_stranded_illumina/clean_reads/{SAMPLES}_R1_001.fastq.gz"
+FASTQ_CLEAN1b:    "paired_stranded_illumina/clean_reads/{SAMPLES}_R2_001.fastq.gz"
+FASTQ_CLEAN2:     "single_stranded_illumina/clean_reads/{SAMPLES}_R1.fastq.gz"
+FASTQ_CLEAN3:     "single_unstranded_illumina/clean_reads/{SAMPLES}_R1.fastq.gz"
+FASTQ_CLEAN4:     "single_unstranded_454/supersuperclean_reads/{SAMPLES}_R1.fastq.gz"
+FASTQ_CLEAN5a:    "paired_unstranded_illumina/clean_reads/{SAMPLES}_R1_001.fastq.gz"
+FASTQ_CLEAN5b:    "paired_unstranded_illumina/clean_reads/{SAMPLES}_R2_001.fastq.gz"
+
+
+#########################################################################################
+## Directories for generating gene model (protein)
+
+GENE_MODEL8:      "gene_model_protein/gene_model"
+ANNOTATION8:      "gene_model_protein/annotation"
+COUNTS8:          "gene_model_protein/counts"
+MAPPED8:          "gene_model_protein/mapped_reads"
+MULTIQC8:         "gene_model_protein/multiqc"
+BAM8_1:           "gene_model_protein/mapped_reads/paired_stranded_illumina"
+BAM8_2:           "gene_model_protein/mapped_reads/single_stranded_illumina"
+BAM8_3:           "gene_model_protein/mapped_reads/single_unstranded_illumina"
+BAM8_4:           "gene_model_protein/mapped_reads/single_unstranded_454"
+BAM8_5:           "gene_model_protein/mapped_reads/paired_unstranded_illumina"
+
+#########################################################################################
+## Directories for comparing gene models
+
+GENE_MODEL9:      "gene_model_compared/gene_model"
+COUNTS9:          "gene_model_compared/counts"
+MAPPED9:          "gene_model_compared/mapped_reads"
+MULTIQC9:         "gene_model_compared/multiqc_all"
+BAM9_1:           "gene_model_compared/mapped_reads/paired_stranded_illumina"
+BAM9_2:           "gene_model_compared/mapped_reads/single_stranded_illumina"
+BAM9_3:           "gene_model_compared/mapped_reads/single_unstranded_illumina"
+BAM9_4:           "gene_model_compared/mapped_reads/single_unstranded_454"
+BAM9_5:           "gene_model_compared/mapped_reads/paired_unstranded_illumina"
+
