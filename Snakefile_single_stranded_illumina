@@ -3,47 +3,29 @@
 #"file:///shared/.singularity/nextflow-embl-abr-webinar.simg", 
 "docker://rsuchecki/nextflow-embl-abr-webinar"
 
-SAMPLES = [
-"7_C7N8UANXX_GAGTGG_L006",
-"8_C7N8UANXX_ACTGAT_L006",
-"9_C7N8UANXX_ATTCCT_L006",
-"10_C7N8UANXX_ATCACG_L006",
-"7_C7N8UANXX_GAGTGG_L007",
-"8_C7N8UANXX_ACTGAT_L007",
-"9_C7N8UANXX_ATTCCT_L007",
-"10_C7N8UANXX_ATCACG_L007",
-"SRR5434206",
-"SRR5434207",
-"SRR5434208",
-"SRR5434209",
-"SRR5434210",
-"SRR5434211",
-"SRR5434212",
-"SRR5434213"]
+configfile: "config.yaml"
 
-
-READS = "R1"
-
-DIR0 = "/fast/users/a1697274/snakemake/bioinformatics"
-DIR = DIR0+"/single_stranded_illumina"
-RAW = DIR+"/raw_reads"
-QC1 = RAW+"/qc"
-ENVS = DIR0+"/envs/default.yaml"
-MULTIQC1 = RAW+"/multiqc"
-TRIMMED = DIR+"/trimmed_reads"
-ADAPTERS= DIR0+"/misc/trimmomatic_adapters/all_adapters.fa"
-QC2 = TRIMMED+"/qc"
-MULTIQC2 = TRIMMED+"/multiqc"
-RRNA = DIR0+"/database_rrna"
-CLEAN = DIR+"/clean_reads"
-QC3 = CLEAN+"/qc"
-MULTIQC3 = CLEAN+"/multiqc"
-MAPPED = DIR+"/mapped_reads"
-MULTIQC4 = MAPPED+"/multiqc"
-REFERENCES = DIR0+"/references"
-LOGS = DIR+"/logs"
-MULTIQC5 = DIR+"/multiqc_all"
-CUFFLINK = DIR+"/cufflink"
+SAMPLES         = config["SAMPLES2"]
+READS           = config["READS2"]
+ENVS            = config["ENVS"]
+REFERENCES      = config["REFERENCES"]
+LOGS            = config["LOGS"]
+ADAPTERS        = config["ADAPTERS"]
+RRNA            = config["RRNA"]
+DIR             = config["DIR3"]
+RAW             = config["RAW3"]
+QC1             = config["QC3_1"]
+MULTIQC1        = config["MULTIQC3_1"]
+TRIMMED         = config["TRIMMED3"]
+QC2             = config["QC3_2"]
+MULTIQC2        = config["MULTIQC3_2"]
+CLEAN           = config["CLEAN3"]
+QC3             = config["QC3_3"]
+MULTIQC3        = config["MULTIQC3_3"]
+MULTIQC4        = config["MULTIQC3_4"]
+MAPPED          = config["MAPPED3"]
+MULTIQC5        = config["MULTIQC3_5"]
+CUFFLINK        = config["CUFFLINK3"]
 
 ################
 # Pseudo-rules #
@@ -73,7 +55,7 @@ rule all:
 ################
 rule star_index:
 	input:
-		REFERENCES+"/Plantago.fasta"
+		REFERENCES+"/Plantago.fasta.gz"
 	output:
 		directory(DIR+"/index")
 	conda:

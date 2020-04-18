@@ -3,108 +3,37 @@
 #"file:///shared/.singularity/nextflow-embl-abr-webinar.simg", 
 "docker://rsuchecki/nextflow-embl-abr-webinar"
 
-SAMPLES1 = [
-"WT_8_DPA_4_S1",
-"WT_8_DPA_5_S2",
-"WT_8_DPA_6_S3",
-"WT_10_DPA_4_S4",
-"WT_10_DPA_6_S6",
-"WT_12_DPA_4_S7",
-"WT_12_DPA_5_S8",
-"WT_12_DPA_6_S9",
-"WT_14_DPA_4_S10",
-"WT_14_DPA_5_S11",
-"WT_14_DPA_6_S12",
-"1078_6_8_DPA_2_S13",
-"1078_6_8_DPA_3_S14",
-"1078_6_10_DPA_1_S16",
-"1078_6_10_DPA_3_S17",
-"1078_6_10_DPA_4_S18",
-"1078_6_12_DPA_6_S19",
-"1078_6_12_DPA_4_S20",
-"1078_6_12_DPA_5_S21",
-"1078_6_14_DPA_4_S22",
-"1078_6_14_DPA_5_S23",
-"1078_6_14_DPA_1_S24"]
+configfile: "config.yaml"
 
-#Note: S5 and S15 are discarded due to ribosomal contamination reaching >90%
-
-SAMPLES2 = [
-"7_C7N8UANXX_GAGTGG_L006",
-"8_C7N8UANXX_ACTGAT_L006",
-"9_C7N8UANXX_ATTCCT_L006",
-"10_C7N8UANXX_ATCACG_L006",
-"7_C7N8UANXX_GAGTGG_L007",
-"8_C7N8UANXX_ACTGAT_L007",
-"9_C7N8UANXX_ATTCCT_L007",
-"10_C7N8UANXX_ATCACG_L007",
-"SRR5434206",
-"SRR5434207",
-#"SRR5434208",
-#"SRR5434209",
-"SRR5434210",
-"SRR5434211",
-#"SRR5434212",
-#"SRR5434213"
-]
-
-SAMPLES3 = [
-"JPo_1_C5697ACXX_CCGTCC_L005",
-"JPo_2_C5697ACXX_GTCCGC_L005",
-"JPo_3_C5697ACXX_GTGAAA_L005",
-"JPo_4_C5697ACXX_GTGGCC_L005",
-"SRR3883619",
-"SRR3883620",
-"SRR3883621",
-"SRR3883622",
-"SRR3885726",
-"SRR3885727",
-"SRR3885728",
-"SRR3883618"]
-
-#Note: Four samples are discarded due to low mapping (leaf infected)
-
-SAMPLES4 = [
-#"SRR066373",
-#"SRR1311174",
-"SRR066374",
-#"SRR1311175",
-#"SRR342350",
-#"SRR342351",
-#"SRR066375",
-#"SRR1311176",
-#"SRR066376",
-#"SRR1311177"
-]
-
-SAMPLES5 = "SRR629688"
-
-READS1 = ["R1_001", "R2_001"]
-READS3 = "R1"
-
-DIR0 = "/fast/users/a1697274/snakemake/bioinformatics"
-DIR = DIR0+"/gene_model_protein"
-REFERENCES = DIR0+"/references"
-ENVS = DIR0+"/envs/default.yaml"
-LOGS = DIR+"/logs"
-GENE_MODEL = DIR+"/gene_model"
-ANNOTATION = DIR+"/annotation"
-COUNTS = DIR+"/counts"
-MAPPED = DIR+"/mapped_reads"
-MULTIQC = DIR+"/multiqc"
-BAM1 = MAPPED+"/paired_stranded_illumina"
-BAM2 = MAPPED+"/single_stranded_illumina"
-BAM3 = MAPPED+"/single_unstranded_illumina"
-BAM4 = MAPPED+"/single_unstranded_454"
-BAM5 = MAPPED+"/paired_unstranded_illumina"
-CLEAN1a = DIR0+"/paired_stranded_illumina/clean_reads/{SAMPLES}_R1_001.fastq.gz"
-CLEAN1b = DIR0+"/paired_stranded_illumina/clean_reads/{SAMPLES}_R2_001.fastq.gz"
-CLEAN2 = DIR0+"/single_stranded_illumina/clean_reads/{SAMPLES}_R1.fastq.gz"
-CLEAN3 = DIR0+"/single_unstranded_illumina/clean_reads/{SAMPLES}_R1.fastq.gz"
-CLEAN4 = DIR0+"/single_unstranded_454/supersuperclean_reads/{SAMPLES}_R1.fastq.gz"
-CLEAN5a = DIR0+"/paired_unstranded_illumina/clean_reads/{SAMPLES}_R1_001.fastq.gz"
-CLEAN5b = DIR0+"/paired_unstranded_illumina/clean_reads/{SAMPLES}_R2_001.fastq.gz"
-
+SAMPLES1        = config["SAMPLES1"]
+SAMPLES2        = config["SAMPLES2a"]
+SAMPLES3        = config["SAMPLES3"]
+SAMPLES4        = config["SAMPLES4"]
+SAMPLES5        = config["SAMPLES5"]
+READS1          = config["READS1"]
+READS3          = config["READS2"]
+ENVS            = config["ENVS"]
+REFERENCES	= config["REFERENCES"]
+LOGS            = config["LOGS"]
+DIR             = config["DIR7"]
+GENE_MODEL_RNA  = config["GENE_MODEL7"]
+GENE_MODEL	= config["GENE_MODEL8"]
+ANNOTATION      = config["ANNOTATION8"]
+COUNTS          = config["COUNTS8"]
+MULTIQC         = config["MULTIQC8"]
+MAPPED          = config["MAPPED8"]
+BAM1            = config["BAM8_1"]
+BAM2            = config["BAM8_2"]
+BAM3            = config["BAM8_3"]
+BAM4            = config["BAM8_4"]
+BAM5            = config["BAM8_5"]
+CLEAN1a         = config["FASTQ_CLEAN1a"]
+CLEAN1b         = config["FASTQ_CLEAN1b"]
+CLEAN2          = config["FASTQ_CLEAN2"]
+CLEAN3          = config["FASTQ_CLEAN3"]
+CLEAN4          = config["FASTQ_CLEAN4"]
+CLEAN5a         = config["FASTQ_CLEAN5a"]
+CLEAN5b         = config["FASTQ_CLEAN5b"]
 
 ################
 # Pseudo-rules #
@@ -160,7 +89,7 @@ rule all:
 
 rule gtftofasta:
 	input:
-		DIR0+"/gene_model_RNA/gene_model/gene_model_RNA.gtf"
+		GENE_MODEL_RNA+"/gene_model_RNA.gtf"
 	output:
 		GENE_MODEL+"/transcript.fasta"
 	conda:
@@ -174,7 +103,7 @@ rule gtftofasta:
 
 rule gtftogff3:
 	input:
-		DIR0+"/gene_model_RNA/gene_model/gene_model_RNA.gtf"
+		GENE_MODEL_RNA+"/gene_model_RNA.gtf"
 	output:
 		GENE_MODEL+"/gene_model_RNA.gff3"
 	conda:
@@ -288,10 +217,10 @@ rule predict_transcript:
 		ENVS
 	params:
 		dir = directory(GENE_MODEL+"/transcript.fasta.transdecoder_dir"),
-		o1 = DIR0+"/transcript.fasta.transdecoder.bed",
-		o2 = DIR0+"/transcript.fasta.transdecoder.cds",
-		o3 = DIR0+"/transcript.fasta.transdecoder.pep",
-		o4 = DIR0+"/transcript.fasta.transdecoder.gff3"
+		o1 = "transcript.fasta.transdecoder.bed",
+		o2 = "transcript.fasta.transdecoder.cds",
+		o3 = "transcript.fasta.transdecoder.pep",
+		o4 = "transcript.fasta.transdecoder.gff3"
 	shell:
 		"""
 		TransDecoder.Predict -t {input.fasta} \

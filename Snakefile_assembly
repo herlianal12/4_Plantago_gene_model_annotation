@@ -3,31 +3,24 @@
 #"file:///shared/.singularity/nextflow-embl-abr-webinar.simg",
 "docker://rsuchecki/nextflow-embl-abr-webinar"
 
+configfile: "config.yaml"
 
-SAMPLES=[
-"m54078_170831_060817.subreads",
-"m54078_170831_160707.subreads",
-"m54078_170901_080645.subreads",
-"m54078_170901_180552.subreads",
-"m54078_170902_041524.subreads",
-"m54078_170902_142504.subreads",
-"m54078_170903_003441.subreads"
-]
+SAMPLES_PAC     = config["SAMPLES_PAC"]
+SAMPLES_HiC     = config["SAMPLES_HiC"]
+ENVS            = config["ENVS"]
+REFERENCES      = config["REFERENCES"]
+LOGS            = config["LOGS"]
+INDEX_PAC       = config["INDEX_PAC"]
+INDEX_HiC       = config["INDEX_HiC"]
+RAW_PAC         = config["RAW_PAC"]
+RAW_HiC         = config["RAW_HiC"]
+RAW_FASTQ       = config["RAW1"]
+QC1             = config["QC1"]
+MULTIQC1        = config["MULTIQC1"]
+MAPPED_PAC      = config["MAPPED_PAC"]
+MAPPED_HiC      = config["MAPPED_HiC"]
 
-SAMPLE_HiC=["Povata-HiC_combined"]
 
-DIR = "assembly"
-INDEX_PAC = DIR+"/index_PAC"
-INDEX_HiC = DIR+"/index_HiC"
-RAW_PAC = DIR+"/plantago_genome_sequences/sequel"
-RAW_HiC = DIR+"/plantago_genome_sequences/HiC"
-RAW_FASTQ = DIR+"/raw_reads"
-QC1 = DIR+"/qc_raw"
-MULTIQC1 = DIR+"/multiqc_raw"
-ENVS = "envs/assembly.yaml"
-LOGS = DIR+"/logs"
-MAPPED = DIR+"/mapped_reads"
-MAPPED_HiC = DIR+"/mapped_reads_HiC"
 
 ################
 # Pseudo-rules #
@@ -36,32 +29,34 @@ MAPPED_HiC = DIR+"/mapped_reads_HiC"
 # the list of ALL the files you want the workflow to create. e.g.:
 rule all:
 	input:
+		REFERENCES+"/Plantago.fasta.gz",
 		INDEX_PAC+"/Plantago.fasta.mmi",
 		INDEX_HiC+"/Plantago.fasta.amb",
-		expand(RAW_FASTQ+"/{SAMPLE}.fastq.gz", SAMPLE=SAMPLES),
-		expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES),
+		expand(RAW_FASTQ+"/{SAMPLE}.fastq.gz", SAMPLE=SAMPLES_PAC),
+		expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES_PAC),
 		MULTIQC1+"/multiqc_report.html",
-		expand(MAPPED+"/{SAMPLE}.bam", SAMPLE=SAMPLES),
-		MAPPED+"/merge.bam",
-		expand(MAPPED+"/{SAMPLE}.bam.bai", SAMPLE=SAMPLES),
-		MAPPED+"/merge.bam.bai",
-		expand(MAPPED+"/{SAMPLE}.cram", SAMPLE=SAMPLES),
-		MAPPED+"/merge.cram",
-		expand(MAPPED+"/{SAMPLE}.cram.crai", SAMPLE=SAMPLES),
-		MAPPED+"/merge.cram.crai",
-		expand(MAPPED_HiC+"/{SAMPLE}.bam", SAMPLE=SAMPLE_HiC),
-		expand(MAPPED_HiC+"/{SAMPLE}.bam.bai", SAMPLE=SAMPLE_HiC),
-		expand(MAPPED_HiC+"/{SAMPLE}.cram", SAMPLE=SAMPLE_HiC),
-		expand(MAPPED_HiC+"/{SAMPLE}.cram.crai", SAMPLE=SAMPLE_HiC),
+		expand(MAPPED_PAC+"/{SAMPLE}.bam", SAMPLE=SAMPLES_PAC),
+		MAPPED_PAC+"/merge.bam",
+		expand(MAPPED_PAC+"/{SAMPLE}.bam.bai", SAMPLE=SAMPLES_PAC),
+		MAPPED_PAC+"/merge.bam.bai",
+		expand(MAPPED_PAC+"/{SAMPLE}.cram", SAMPLE=SAMPLES_PAC),
+		MAPPED_PAC+"/merge.cram",
+		expand(MAPPED_PAC+"/{SAMPLE}.cram.crai", SAMPLE=SAMPLES_PAC),
+		MAPPED_PAC+"/merge.cram.crai",
+		#expand(MAPPED_HiC+"/{SAMPLE}.bam", SAMPLE=SAMPLES_HiC),
+		#expand(MAPPED_HiC+"/{SAMPLE}.bam.bai", SAMPLE=SAMPLES_HiC),
+		#expand(MAPPED_HiC+"/{SAMPLE}.cram", SAMPLE=SAMPLES_HiC),
+		#expand(MAPPED_HiC+"/{SAMPLE}.cram.crai", SAMPLE=SAMPLES_HiC),
 
 ################
 # Rules Proper #
 ################
+
 rule minimap2_index:
 	input:
-		"Plantago.fasta.gz"
+		REFERENCES+"/Plantago.fasta.gz"
 	output:
-		INDEX_PAC+"/Plantago.fasta.mmi"
+		INDEX_PAC+"/Plantago.fasta.gz.mmi"
 	conda:
 		ENVS
 	log:
@@ -74,13 +69,13 @@ rule minimap2_index:
 
 rule bwa_index:
 	input:
-		INDEX_HiC+"/Plantago.fasta"
+		INDEX_HiC+"/Plantago.fasta.gz"
 	output:
-		o1 = INDEX_HiC+"/Plantago.fasta.amb",
-		o2 = INDEX_HiC+"/Plantago.fasta.ann",
-		o3 = INDEX_HiC+"/Plantago.fasta.bwt",
-		o4 = INDEX_HiC+"/Plantago.fasta.pac",
-		o5 = INDEX_HiC+"/Plantago.fasta.sa",
+		o1 = INDEX_HiC+"/Plantago.fasta.gz.amb",
+		o2 = INDEX_HiC+"/Plantago.fasta.gz.ann",
+		o3 = INDEX_HiC+"/Plantago.fasta.gz.bwt",
+		o4 = INDEX_HiC+"/Plantago.fasta.gz.pac",
+		o5 = INDEX_HiC+"/Plantago.fasta.gz.sa",
 	conda:
 		ENVS
 	shell:
@@ -125,7 +120,7 @@ rule fastqc_raw:
 
 rule multiqc_raw:
 	input:
-		expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES)
+		expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES_PAC)
 	output:
 		MULTIQC1+"/multiqc_report.html"
 	conda:
@@ -144,9 +139,9 @@ rule multiqc_raw:
 rule minimap2_mapping:
 	input:
 		data = RAW_FASTQ+"/{SAMPLE}.fastq.gz",
-		index = INDEX_PAC+"/Plantago.fasta.mmi",
+		index = INDEX_PAC+"/Plantago.fasta.gz.mmi",
 	output:
-		MAPPED+"/{SAMPLE}.bam",
+		MAPPED_PAC+"/{SAMPLE}.bam",
 	conda:
 		ENVS
 	shell:
@@ -162,9 +157,9 @@ rule minimap2_mapping:
 
 rule samtools_merge:
 	input:
-		expand(MAPPED+"/{SAMPLE}.bam", SAMPLE=SAMPLES)
+		expand(MAPPED_PAC+"/{SAMPLE}.bam", SAMPLE=SAMPLES_PAC)
 	output:
-		MAPPED+"/merge.bam"
+		MAPPED_PAC+"/merge.bam"
 	conda:
 		ENVS
 	params:
@@ -176,9 +171,9 @@ rule samtools_merge:
 
 rule samtools_bai:
 	input:
-		MAPPED+"/{SAMPLE}.bam"
+		MAPPED_PAC+"/{SAMPLE}.bam"
 	output:
-		MAPPED+"/{SAMPLE}.bam.bai"
+		MAPPED_PAC+"/{SAMPLE}.bam.bai"
 	conda:
 		ENVS
 	params:
@@ -190,9 +185,9 @@ rule samtools_bai:
 
 rule samtools_bai_merge:
 	input:
-		MAPPED+"/merge.bam"
+		MAPPED_PAC+"/merge.bam"
 	output:
-		MAPPED+"/merge.bam.bai"
+		MAPPED_PAC+"/merge.bam.bai"
 	conda:
 		ENVS
 	params:   
@@ -204,48 +199,48 @@ rule samtools_bai_merge:
 
 rule samtools_cram:
 	input:
-		bam = MAPPED+"/{SAMPLE}.bam",
-		reference = "Plantago.fasta"
+		bam = MAPPED_PAC+"/{SAMPLE}.bam",
+		ref = REFERENCES+"/Plantago.fasta.gz"
 	output:
-		MAPPED+"/{SAMPLE}.cram"
+		MAPPED_PAC+"/{SAMPLE}.cram"
 	conda:
 		ENVS
 	shell:
 		"""
-		samtools view -T {input.reference} -C -o {output} {input.bam}
+		samtools view -T {input.ref} -C -o {output} {input.bam}
 		"""
 
 rule samtools_cram_merge:
 	input:
-		bam = MAPPED+"/merge.bam",
-		reference = "Plantago.fasta"
+		bam = MAPPED_PAC+"/merge.bam",
+		ref = REFERENCES+"/Plantago.fasta.gz"
 	output:
-		MAPPED+"/merge.cram"
+		MAPPED_PAC+"/merge.cram"
 	conda:
 		ENVS
 	shell:
 		"""
-		samtools view -T {input.reference} -C -o {output} {input.bam}
+		samtools view -T {input.ref} -C -o {output} {input.bam}
 		"""
 
 rule samtools_cram_HiC:
 	input:
 		bam = MAPPED_HiC+"/{SAMPLE}.bam",
-		reference = INDEX_HiC+"/Plantago.fasta"
+		ref = REFERENCES+"/Plantago.fasta.gz"
 	output:
 		MAPPED_HiC+"/{SAMPLE}.cram"
 	conda:
 		ENVS
 	shell:
 		"""
-		samtools view -T {input.reference} -C -o {output} {input.bam}
+		samtools view -T {input.ref} -C -o {output} {input.bam}
 		"""
 
 rule samtools_crai:
 	input:
-		MAPPED+"/{SAMPLE}.cram"
+		MAPPED_PAC+"/{SAMPLE}.cram"
 	output:
-		MAPPED+"/{SAMPLE}.cram.crai"
+		MAPPED_PAC+"/{SAMPLE}.cram.crai"
 	conda:
 		ENVS
 	params:
@@ -257,9 +252,9 @@ rule samtools_crai:
 
 rule samtools_crai_merge:
 	input:
-		MAPPED+"/merge.cram"
+		MAPPED_PAC+"/merge.cram"
 	output:
-		MAPPED+"/merge.cram.crai"
+		MAPPED_PAC+"/merge.cram.crai"
 	conda:
 		ENVS
 	params:   
@@ -287,14 +282,14 @@ rule bwa_HiC:
 	input:
 		R1 = RAW_HiC+"/{SAMPLE}_R1.fastq.gz",
 		R2 = RAW_HiC+"/{SAMPLE}_R2.fastq.gz",
-		reference = INDEX_HiC+"/Plantago.fasta",
+		ref = INDEX_HiC+"/Plantago.fasta.gz",
 	output:
 		MAPPED_HiC+"/{SAMPLE}.bam",
 	conda:
 		ENVS
 	shell:
 		"""
-		bwa mem -5SP {input.reference} {input.R1} {input.R2} \
+		bwa mem -5SP {input.ref} {input.R1} {input.R2} \
 		| samtools view -S -h -b -F 2316 \
 		| samtools sort \
 		--threads 2 -l 7 \
