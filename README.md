@@ -1,6 +1,6 @@
 # Genome Assembly and RNAseq Analysis Workflow in Plantago ovata
 
-This repository is aimed to document, develop, and test genome assembly and RNAseq pipelines. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtain in this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
+This repository is aimed to document, develop, and test genome assembly and RNAseq pipelines. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtained in this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
 
 There are 9 Snakefiles. Snakefile_assembly contains rules for genome assembly. Snakefile_paired_stranded_illumina, Snakefile_single_stranded_illumina, Snakefile_single_unstranded_illumina, Snakefile_single_unstranded_454 and Snakefile_paired_unstranded_illumina are rules for generating transcript from 5 different groups of RNAseq data. These five Snakefile need to be executed first before running Snakefile_gene_model_RNA and Snakefile_gene_model_protein. Since there are differences between two gene models, Snakefile_gene_model_compared are created to get information about non coding RNA.
 
@@ -302,7 +302,7 @@ gunzip gene_model_protein/annotation/pfam/Pfam-A.hmm.gz
 wget "https://data.broadinstitute.org/Trinity/Trinotate_v3_RESOURCES/uniprot_sprot.pep.gz" \
 -O gene_model_protein/annotation/uniprot/uniprot_sprot.pep.gz &&
 gunzip gene_model_protein/annotation/uniprot/uniprot_sprot.pep.gz
-
+```
 
 ```bash
 
