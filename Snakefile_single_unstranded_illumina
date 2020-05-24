@@ -37,44 +37,45 @@ CUFFLINK        = config["CUFFLINK4"]
 # the list of ALL the files you want the workflow to create. e.g.:
 rule all:
 	input:
-		directory(DIR+"/index"),
-		expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC1+"/multiqc_report.html",
-		expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC2+"/multiqc_report.html",
-		expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		expand(CLEAN+"/{SAMPLE}_{READ}_stat", SAMPLE=SAMPLES, READ=READS),
-		expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC3+"/multiqc_report.html",
-		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
-		MULTIQC4+"/multiqc_report.html",
-		MULTIQC5+"/multiqc_report.html",
-		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
-		CUFFLINK+"/assemblies.txt",
+		#directory(DIR+"/index"),
+		#expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		#MULTIQC1+"/multiqc_report.html",
+		#expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		#expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		#MULTIQC2+"/multiqc_report.html",
+		#expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		#expand(CLEAN+"/{SAMPLE}_{READ}_stat", SAMPLE=SAMPLES, READ=READS),
+		#expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		#MULTIQC3+"/multiqc_report.html",
+		#expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
+		#MULTIQC4+"/multiqc_report.html",
+		#MULTIQC5+"/multiqc_report.html",
+		#expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
+		#CUFFLINK+"/assemblies.txt",
+		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES)
 
 ################
 # Rules Proper #
 ################
-rule star_index:
-	input:
-		REFERENCES+"/Plantago.fasta.gz"
-	output:
-		directory(DIR+"/index")
-	conda:
-		ENVS
-	log:
-		LOGS+"/star_index"
-	shell:
-		"""
-		mkdir {output} &&
-		STAR --runThreadN 8 \
-		--runMode genomeGenerate \
-		--genomeDir {output} \
-		--genomeSAindexNbases 12 \
-		--genomeFastaFiles {input}
-		2> {log}
-		"""
+#rule star_index:
+#	input:
+#		REFERENCES+"/Plantago.fasta.gz"
+#	output:
+#		directory(DIR+"/index")
+#	conda:
+#		ENVS
+#	log:
+#		LOGS+"/star_index"
+#	shell:
+#		"""
+#		mkdir {output} &&
+#		STAR --runThreadN 8 \
+#		--runMode genomeGenerate \
+#		--genomeDir {output} \
+#		--genomeSAindexNbases 12 \
+#		--genomeFastaFiles {input}
+#		2> {log}
+#		"""
 
 rule fastqc_raw:
 	input:
@@ -112,21 +113,21 @@ rule multiqc_raw:
 		2> {log}
 		"""
 
-rule trimmomatic:
-	input:
-		r1 = RAW+"/{SAMPLES}_R1.fastq.gz",
-		adapters = ADAPTERS
-	output:
-		TRIMMED+"/{SAMPLES}_R1.fastq.gz",
-	conda:
-		ENVS
-	log:
-		LOGS+"/trimmomatic/{SAMPLES}_R1"
-	shell:
-		"""
-		trimmomatic SE -threads 2 {input.r1} {output} ILLUMINACLIP:{input.adapters}:2:30:10:3:true LEADING:2 TRAILING:2 SLIDINGWINDOW:4:15 MINLEN:36
-		2> {log}
-		"""
+#rule trimmomatic:
+#	input:
+#		r1 = RAW+"/{SAMPLES}_R1.fastq.gz",
+#		adapters = ADAPTERS
+#	output:
+#		TRIMMED+"/{SAMPLES}_R1.fastq.gz",
+#	conda:
+#		ENVS
+#	log:
+#		LOGS+"/trimmomatic/{SAMPLES}_R1"
+#	shell:
+#		"""
+#		trimmomatic SE -threads 2 {input.r1} {output} ILLUMINACLIP:{input.adapters}:2:30:10:3:true LEADING:2 TRAILING:2 SLIDINGWINDOW:4:15 MINLEN:36
+#		2> {log}
+#		"""
 
 rule fastqc_trimmed:
 	input:
@@ -164,32 +165,32 @@ rule multiqc_trimmed:
 		2> {log}
 		"""
 
-rule bbmap:
-	input:
-		file = TRIMMED+"/{SAMPLES}_R1.fastq.gz",
-		ref1 = RRNA+"/SILVA_128_LSURef_tax_silva.fasta",
-		ref2 = RRNA+"/SILVA_138_SSURef_NR99_tax_silva.fasta",
-		ref3 = RRNA+"/SILVA_138_SSURef_tax_silva.fasta",
-		ref4 = REFERENCES+"/plantago_chloroplast.fasta",
-		ref5 = REFERENCES+"/plantago_mitocondria.fasta",
-		ref6 = REFERENCES+"/NC_041421.1.fasta",
-		ref7 = RRNA+"/Archaea.fasta",
-		ref8 = RRNA+"/Bacteria.fasta",
-		ref9 = RRNA+"/Mitochondria.fasta",
-		ref10 = RRNA+"/Plastids.fasta",
-		ref11 = RRNA+"/Eukaryota.fasta",
-		ref12 = REFERENCES+"/MH165324.fasta",
-		ref13 = REFERENCES+"/HM059793_rubiscolargechloroplast.fasta"
-	output:
-		clean = CLEAN+"/{SAMPLES}_R1.fastq.gz",
-		conta = CLEAN+"/conta/{SAMPLES}_R1.fastq.gz",
-		statistic = CLEAN+"/{SAMPLES}_R1_stat"
-	conda:
-		ENVS
-	shell:
-		"""
-		bbduk.sh -Xmx20g in={input.file} out={output.clean} outm={output.conta} stats={output.statistic} ref={input.ref1},{input.ref2},{input.ref3},{input.ref4},{input.ref5},{input.ref6},{input.ref7},{input.ref8},{input.ref9},{input.ref10},{input.ref11},{input.ref12},{input.ref13}
-		"""
+#rule bbmap:
+#	input:
+#		file = TRIMMED+"/{SAMPLES}_R1.fastq.gz",
+#		ref1 = RRNA+"/SILVA_128_LSURef_tax_silva.fasta",
+#		ref2 = RRNA+"/SILVA_138_SSURef_NR99_tax_silva.fasta",
+#		ref3 = RRNA+"/SILVA_138_SSURef_tax_silva.fasta",
+#		ref4 = REFERENCES+"/plantago_chloroplast.fasta",
+#		ref5 = REFERENCES+"/plantago_mitocondria.fasta",
+#		ref6 = REFERENCES+"/NC_041421.1.fasta",
+#		ref7 = RRNA+"/Archaea.fasta",
+#		ref8 = RRNA+"/Bacteria.fasta",
+#		ref9 = RRNA+"/Mitochondria.fasta",
+#		ref10 = RRNA+"/Plastids.fasta",
+#		ref11 = RRNA+"/Eukaryota.fasta",
+#		ref12 = REFERENCES+"/MH165324.fasta",
+#		ref13 = REFERENCES+"/HM059793_rubiscolargechloroplast.fasta"
+#	output:
+#		clean = CLEAN+"/{SAMPLES}_R1.fastq.gz",
+#		conta = CLEAN+"/conta/{SAMPLES}_R1.fastq.gz",
+#		statistic = CLEAN+"/{SAMPLES}_R1_stat"
+#	conda:
+#		ENVS
+#	shell:
+#		"""
+#		bbduk.sh -Xmx20g in={input.file} out={output.clean} outm={output.conta} stats={output.statistic} ref={input.ref1},{input.ref2},{input.ref3},{input.ref4},{input.ref5},{input.ref6},{input.ref7},{input.ref8},{input.ref9},{input.ref10},{input.ref11},{input.ref12},{input.ref13}
+#		"""
 
 rule fastqc_clean:
 	input:
@@ -323,9 +324,21 @@ rule compose_merge:
 		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
 	output:
 		txt=CUFFLINK+"/assemblies.txt"
-	conda:
-		ENVS
 	log:
 		LOGS+"/compare_merge.log"
 	run:
 		with open(output.txt, "w") as out: print(*input, sep="\n", file=out)
+
+rule samtools_bai1:
+	input:
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam"
+	output:
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam.bai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""

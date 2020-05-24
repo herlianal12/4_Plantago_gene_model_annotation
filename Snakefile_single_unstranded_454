@@ -38,44 +38,46 @@ CUFFLINK        = config["CUFFLINK5"]
 # the list of ALL the files you want the workflow to create. e.g.:
 rule all:
 	input:
-		directory(DIR+"/index"),
-		expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC1+"/multiqc_report.html",
-		expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC2+"/multiqc_report.html",
-		expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		expand(CLEAN+"/{SAMPLE}_{READ}_stat", SAMPLE=SAMPLES, READ=READS),
-		expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC3+"/multiqc_report.html",
-		expand(SUPERCLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		expand(SUPERCLEAN+"/conta/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		expand(SUPERCLEAN+"/{SAMPLE}_{READ}_stat", SAMPLE=SAMPLES, READ=READS),
-		SUPERSUPERCLEAN+"/SRR066373_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR066373_R1_stat",
-		SUPERSUPERCLEAN+"/SRR1311174_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR1311174_R1_stat",
-		SUPERSUPERCLEAN+"/SRR066374_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR066374_R1_stat",
-		SUPERSUPERCLEAN+"/SRR1311175_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR1311175_R1_stat",
-		SUPERSUPERCLEAN+"/SRR342350_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR342350_R1_stat",
-		SUPERSUPERCLEAN+"/SRR342351_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR342351_R1_stat",
-		SUPERSUPERCLEAN+"/SRR066375_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR066375_R1_stat",
-		SUPERSUPERCLEAN+"/SRR1311176_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR1311176_R1_stat",
-		SUPERSUPERCLEAN+"/SRR066376_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR066376_R1_stat",
-		SUPERSUPERCLEAN+"/SRR1311177_R1.fastq.gz",
-		SUPERSUPERCLEAN+"/SRR1311177_R1_stat",
-		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
-		MULTIQC4+"/multiqc_report.html",
-		MULTIQC5+"/multiqc_report.html",
-		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
-		CUFFLINK+"/assemblies.txt",
+		#directory(DIR+"/index"),
+		#expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		#MULTIQC1+"/multiqc_report.html",
+		#expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		#expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		#MULTIQC2+"/multiqc_report.html",
+		#expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		#expand(CLEAN+"/{SAMPLE}_{READ}_stat", SAMPLE=SAMPLES, READ=READS),
+		#expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		#MULTIQC3+"/multiqc_report.html",
+		#expand(SUPERCLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		#expand(SUPERCLEAN+"/conta/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		#expand(SUPERCLEAN+"/{SAMPLE}_{READ}_stat", SAMPLE=SAMPLES, READ=READS),
+		#SUPERSUPERCLEAN+"/SRR066373_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR066373_R1_stat",
+		#SUPERSUPERCLEAN+"/SRR1311174_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR1311174_R1_stat",
+		#SUPERSUPERCLEAN+"/SRR066374_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR066374_R1_stat",
+		#SUPERSUPERCLEAN+"/SRR1311175_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR1311175_R1_stat",
+		#SUPERSUPERCLEAN+"/SRR342350_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR342350_R1_stat",
+		#SUPERSUPERCLEAN+"/SRR342351_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR342351_R1_stat",
+		#SUPERSUPERCLEAN+"/SRR066375_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR066375_R1_stat",
+		#SUPERSUPERCLEAN+"/SRR1311176_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR1311176_R1_stat",
+		#SUPERSUPERCLEAN+"/SRR066376_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR066376_R1_stat",
+		#SUPERSUPERCLEAN+"/SRR1311177_R1.fastq.gz",
+		#SUPERSUPERCLEAN+"/SRR1311177_R1_stat",
+		#expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
+		#MULTIQC4+"/multiqc_report.html",
+		#MULTIQC5+"/multiqc_report.html",
+		#expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
+		#CUFFLINK+"/assemblies.txt",
+		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES),
+		CUFFLINK+"/gene_model_RNA_454.gtf"
 
 ################
 # Rules Proper #
@@ -314,40 +316,40 @@ rule multiqc_clean:
 		2> {log}
 		"""
 
-rule star_mapping:
-	input:
-		file = SUPERSUPERCLEAN+"/{SAMPLES}_R1.fastq.gz",
-		index = directory(DIR+"/index"),
-	output:
-		out1 = MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
-		out2 = MAPPED+"/{SAMPLES}Log.final.out",
-		out3 = MAPPED+"/{SAMPLES}Log.out",
-		out4 = MAPPED+"/{SAMPLES}Log.progress.out",
-		out5 = MAPPED+"/{SAMPLES}SJ.out.tab"
-	conda:
-		ENVS
-	log:
-		LOGS+"/star_mapping/{SAMPLES}",
-	params:
-		bam = directory(MAPPED),
-		outfile = MAPPED+"/{SAMPLES}"
-	shell:
-		"""
-		mkdir --parents {params.bam} &&
-		STAR --runThreadN 8 \
-		--genomeDir {input.index} \
-		--readFilesIn {input.file} \
-		--readFilesCommand gunzip -c \
-		--outFileNamePrefix {params.outfile} \
-		--outSAMtype BAM SortedByCoordinate \
-		--alignIntronMax 10000 \
-		--outFilterScoreMinOverLread 0.8 \
-		--outSJfilterCountUniqueMin 5 1 1 1 \
-		--outSJfilterOverhangMin 35 20 20 20 \
-		--outSAMstrandField intronMotif \
-		--outFilterIntronMotifs RemoveNoncanonical \
-		> {log}
-		"""
+#rule star_mapping:
+#	input:
+#		file = SUPERSUPERCLEAN+"/{SAMPLES}_R1.fastq.gz",
+#		index = directory(DIR+"/index"),
+#	output:
+#		out1 = MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
+#		out2 = MAPPED+"/{SAMPLES}Log.final.out",
+#		out3 = MAPPED+"/{SAMPLES}Log.out",
+#		out4 = MAPPED+"/{SAMPLES}Log.progress.out",
+#		out5 = MAPPED+"/{SAMPLES}SJ.out.tab"
+#	conda:
+#		ENVS
+#	log:
+#		LOGS+"/star_mapping/{SAMPLES}",
+#	params:
+#		bam = directory(MAPPED),
+#		outfile = MAPPED+"/{SAMPLES}"
+#	shell:
+#		"""
+#		mkdir --parents {params.bam} &&
+#		STAR --runThreadN 8 \
+#		--genomeDir {input.index} \
+#		--readFilesIn {input.file} \
+#		--readFilesCommand gunzip -c \
+#		--outFileNamePrefix {params.outfile} \
+#		--outSAMtype BAM SortedByCoordinate \
+#		--alignIntronMax 10000 \
+#		--outFilterScoreMinOverLread 0.8 \
+#		--outSJfilterCountUniqueMin 5 1 1 1 \
+#		--outSJfilterOverhangMin 35 20 20 20 \
+#		--outSAMstrandField intronMotif \
+#		--outFilterIntronMotifs RemoveNoncanonical \
+#		> {log}
+#		"""
 
 rule multiqc_star:
 	input:
@@ -410,9 +412,38 @@ rule compose_merge:
 		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
 	output:
 		txt=CUFFLINK+"/assemblies.txt"
-	conda:
-		ENVS
 	log:
 		LOGS+"/compare_merge.log"
 	run:
 		with open(output.txt, "w") as out: print(*input, sep="\n", file=out)
+
+rule samtools_bai1:
+	input:
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam"
+	output:
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam.bai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
+rule merge_assemblies:
+	input:
+		CUFFLINK+"/assemblies.txt"
+	output:
+		CUFFLINK+"/gene_model_RNA_454.gtf"
+	conda:
+		ENVS
+	params:
+		ref = REFERENCES+"/Plantago.fasta",
+		merged = CUFFLINK ,
+		output = CUFFLINK+"/merged.gtf"
+	shell:
+		"""
+		cuffmerge -p 5 -o {params.merged} -s {params.ref} {input} &&
+		mv {params.output} {output}
+		"""

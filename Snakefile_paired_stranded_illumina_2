@@ -5,29 +5,29 @@
 
 configfile: "config.yaml"
 
-SAMPLES         = config["SAMPLES"]
+SAMPLES         = config["SAMPLES6"]
 READS           = config["READS1"]
 ENVS            = config["ENVS"]
 REFERENCES      = config["REFERENCES"]
 LOGS            = config["LOGS"]
 ADAPTERS        = config["ADAPTERS"]
 RRNA            = config["RRNA"]
-DIR             = config["DIR2"]
-RAW             = config["RAW2"]
-QC1             = config["QC2_1"]
-MULTIQC1        = config["MULTIQC2_1"]
-TRIMMED         = config["TRIMMED2_1"]
-QC2             = config["QC2_2"]
-MULTIQC2        = config["MULTIQC2_2"]
-CLEAN           = config["CLEAN2"]
-QC3             = config["QC2_3"]
-MULTIQC3        = config["MULTIQC2_3"]
-MULTIQC4        = config["MULTIQC2_4"]
-MAPPED          = config["MAPPED2"]
-MULTIQC5        = config["MULTIQC2_5"]
-MULTIQC6        = config["MULTIQC2_6"]
-CUFFLINK        = config["CUFFLINK2"]
-MERGED          = config["MERGED2"]
+DIR             = config["DIR2a"]
+RAW             = config["RAW2a"]
+QC1             = config["QC2a_1"]
+MULTIQC1        = config["MULTIQC2a_1"]
+TRIMMED         = config["TRIMMED2a_1"]
+QC2             = config["QC2a_2"]
+MULTIQC2        = config["MULTIQC2a_2"]
+CLEAN           = config["CLEAN2a"]
+QC3             = config["QC2a_3"]
+MULTIQC3        = config["MULTIQC2a_3"]
+MULTIQC4        = config["MULTIQC2a_4"]
+MAPPED          = config["MAPPED2a"]
+MULTIQC5        = config["MULTIQC2a_5"]
+MULTIQC6        = config["MULTIQC2a_6"]
+CUFFLINK        = config["CUFFLINK2a"]
+MERGED          = config["MERGED2a"]
 
 ################
 # Pseudo-rules #
@@ -38,18 +38,20 @@ rule all:
 	input:
 		directory(DIR+"/index"),
 		expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC1+"/multiqc_report.html",
+		#MULTIQC1+"/multiqc_report.html",
 		expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
 		expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC2+"/multiqc_report.html",
+		#MULTIQC2+"/multiqc_report.html",
 		expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
 		expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES),
 		expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC3+"/multiqc_report.html",
-		MULTIQC4+"/multiqc_report.html",
+		#MULTIQC3+"/multiqc_report.html",
+		#MULTIQC4+"/multiqc_report.html",
 		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
-		MULTIQC5+"/multiqc_report.html",
-		MULTIQC6+"/multiqc_report.html",
+		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES),
+		#expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES),
+		#MULTIQC5+"/multiqc_report.html",
+		#MULTIQC6+"/multiqc_report.html",
 		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
 		CUFFLINK+"/assemblies.txt",
 
@@ -290,6 +292,34 @@ rule star_mapping:
 		> {log}
 		"""
 
+rule sort:
+	input:
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
+	output:
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.sorted.bam"
+	conda:
+		ENVS
+	params:
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.sorted"
+	shell:
+		""" 
+		samtools sort -l 9 -n -T {params} -o {output} {input}
+		"""
+
+rule samtools_bai1:
+	input:
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam"
+	output:
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam.bai"
+	conda:
+		ENVS
+	params:
+		""
+	shell:
+		"""
+		samtools index {params} {input} {output}
+		"""
+
 rule multiqc_star:
 	input:
 		expand(MAPPED+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES)
@@ -297,15 +327,12 @@ rule multiqc_star:
 		MULTIQC5+"/multiqc_report.html"
 	conda:
 		ENVS
-	log:
-		LOGS+"/multiqc_star/multiqc_report"
 	params:
 		indir = MAPPED ,
 		outdir = MULTIQC5
 	shell:
 		"""
 		multiqc {params.indir} -o {params.outdir}
-		2> {log}
 		"""
 
 rule multiqc_all:
@@ -317,8 +344,6 @@ rule multiqc_all:
 		MULTIQC6+"/multiqc_report.html"
 	conda:
 		ENVS
-	log:
-		LOGS+"/multiqc_all/multiqc_report"
 	params:
 		indir1 = QC2 ,
 		indir2 = CLEAN ,
@@ -351,8 +376,6 @@ rule compose_merge:
 		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
 	output:
 		txt=CUFFLINK+"/assemblies.txt"
-	conda:
-		ENVS
 	log:
 		LOGS+"/compose_merge.log"
 	run:

@@ -68,7 +68,7 @@ SAMPLES1: [
 "1078_6_14_DPA_1_S24"]
 
 
-## List of RNAseq reads from single-stranded-illumina reads (SAMPLES2 & SAMPLES2a). Four samples are discarded due to low mapping percentages in SAMPLES2a.
+## List of RNAseq reads from single-stranded-illumina reads (SAMPLES2)
 
 SAMPLES2: [
 "7_C7N8UANXX_GAGTGG_L006",
@@ -78,29 +78,7 @@ SAMPLES2: [
 "7_C7N8UANXX_GAGTGG_L007",
 "8_C7N8UANXX_ACTGAT_L007",
 "9_C7N8UANXX_ATTCCT_L007",
-"10_C7N8UANXX_ATCACG_L007",
-"SRR5434206",
-"SRR5434207",
-"SRR5434208",
-"SRR5434209",
-"SRR5434210",
-"SRR5434211",
-"SRR5434212",
-"SRR5434213"]
-
-SAMPLES2a: [
-"7_C7N8UANXX_GAGTGG_L006",
-"8_C7N8UANXX_ACTGAT_L006",
-"9_C7N8UANXX_ATTCCT_L006",
-"10_C7N8UANXX_ATCACG_L006",
-"7_C7N8UANXX_GAGTGG_L007",
-"8_C7N8UANXX_ACTGAT_L007",
-"9_C7N8UANXX_ATTCCT_L007",
-"10_C7N8UANXX_ATCACG_L007",
-"SRR5434206",
-"SRR5434207",
-"SRR5434210",
-"SRR5434211"]
+"10_C7N8UANXX_ATCACG_L007"]
 
 ## List of RNAseq data from single-unstranded-illumina reads (SAMPLES3)
 
@@ -140,6 +118,13 @@ SAMPLES4a: "SRR066374"
 
 SAMPLES5: "SRR629688"
 
+SAMPLES6: [
+"SRR5434207",
+"SRR5434209",
+"SRR5434211",
+"SRR5434213",
+]
+
 
 ## File name extensions (READS1 or READS2)
 
@@ -165,7 +150,8 @@ REFERENCES:      "references"
 ## All working directories that are specific for each Snakefile
 
 DIR1: "assembly"
-DIR2: "paired_stranded_illumina"
+DIR2: "paired_stranded_illumina_1"
+DIR2a: "paired_stranded_illumina_2"
 DIR3: "single_stranded_illumina"
 DIR4: "single_unstranded_illumina"
 DIR5: "single_unstranded_454"
@@ -186,25 +172,45 @@ QC1:        "assembly/qc_raw"
 MULTIQC1:   "assembly/multiqc_raw"
 MAPPED_PAC: "assembly/mapped_reads"
 MAPPED_HiC: "assembly/mapped_reads_HiC"
+GENOME:     "assembly/genome"
 
 #########################################################################################
 ## Directories for paired-stranded-illumina rna seq data
 
-RAW2:             "paired_stranded_illumina/raw_reads"
-QC2_1:            "paired_stranded_illumina/raw_reads/qc"
-MULTIQC2_1:       "paired_stranded_illumina/raw_reads/multiqc"
-TRIMMED2_1:       "paired_stranded_illumina/trimmed_reads"
-QC2_2:            "paired_stranded_illumina/trimmed_reads/qc"
-MULTIQC2_2:       "paired_stranded_illumina/trimmed_reads/multiqc"
-CLEAN2:           "paired_stranded_illumina/clean_reads"
-QC2_3:            "paired_stranded_illumina/clean_reads/qc"
-MULTIQC2_3:       "paired_stranded_illumina/clean_reads/qc_file/multiqc"
-MULTIQC2_4:       "paired_stranded_illumina/clean_reads/stat_file/multiqc"
-MAPPED2:          "paired_stranded_illumina/mapped_reads"
-MULTIQC2_5:       "paired_stranded_illumina/mapped_reads/multiqc"
-MULTIQC2_6:       "paired_stranded_illumina/mapped_reads/multiqc_all"
-CUFFLINK2:        "paired_stranded_illumina/mapped_reads/cufflink"
-MERGED2:          "paired_stranded_illumina/mapped_reads/cufflink/merged"
+RAW2:             "paired_stranded_illumina_1/raw_reads"
+QC2_1:            "paired_stranded_illumina_1/raw_reads/qc"
+MULTIQC2_1:       "paired_stranded_illumina_1/raw_reads/multiqc"
+TRIMMED2_1:       "paired_stranded_illumina_1/trimmed_reads"
+QC2_2:            "paired_stranded_illumina_1/trimmed_reads/qc"
+MULTIQC2_2:       "paired_stranded_illumina_1/trimmed_reads/multiqc"
+CLEAN2:           "paired_stranded_illumina_1/clean_reads"
+QC2_3:            "paired_stranded_illumina_1/clean_reads/qc"
+MULTIQC2_3:       "paired_stranded_illumina_1/clean_reads/qc_file/multiqc"
+MULTIQC2_4:       "paired_stranded_illumina_1/clean_reads/stat_file/multiqc"
+MAPPED2:          "paired_stranded_illumina_1/mapped_reads"
+MULTIQC2_5:       "paired_stranded_illumina_1/mapped_reads/multiqc"
+MULTIQC2_6:       "paired_stranded_illumina_1/multiqc_all"
+CUFFLINK2:        "paired_stranded_illumina_1/cufflink"
+MERGED2:          "paired_stranded_illumina_1/cufflink/merged"
+
+#########################################################################################
+## Directories for paired-stranded-illumina rna seq data from public data
+
+RAW2a:             "paired_stranded_illumina_2/raw_reads"
+QC2a_1:            "paired_stranded_illumina_2/raw_reads/qc"
+MULTIQC2a_1:       "paired_stranded_illumina_2/raw_reads/multiqc"
+TRIMMED2a_1:       "paired_stranded_illumina_2/trimmed_reads"
+QC2a_2:            "paired_stranded_illumina_2/trimmed_reads/qc"
+MULTIQC2a_2:       "paired_stranded_illumina_2/trimmed_reads/multiqc"
+CLEAN2a:           "paired_stranded_illumina_2/clean_reads"
+QC2a_3:            "paired_stranded_illumina_2/clean_reads/qc"
+MULTIQC2a_3:       "paired_stranded_illumina_2/clean_reads/qc_file/multiqc"
+MULTIQC2a_4:       "paired_stranded_illumina_2/clean_reads/stat_file/multiqc"
+MAPPED2a:          "paired_stranded_illumina_2/mapped_reads"
+MULTIQC2a_5:       "paired_stranded_illumina_2/mapped_reads/multiqc"
+MULTIQC2a_6:       "paired_stranded_illumina_2/multiqc_all"
+CUFFLINK2a:        "paired_stranded_illumina_2/cufflink"
+MERGED2a:          "paired_stranded_illumina_2/cufflink/merged"
 
 
 #########################################################################################
@@ -284,20 +290,11 @@ CUFFLINK6:        "paired_unstranded_illumina/cufflink"
 GENE_MODEL7:      "gene_model_RNA/gene_model"
 COUNTS7:          "gene_model_RNA/counts"
 MULTIQC7:         "gene_model_RNA/multiqc_all"
-MAPPED7:          "gene_model_RNA/mapped_reads"
-BAM7_1:           "gene_model_RNA/mapped_reads/paired_stranded_illumina"
-BAM7_2:           "gene_model_RNA/mapped_reads/single_stranded_illumina"
-BAM7_3:           "gene_model_RNA/mapped_reads/single_unstranded_illumina"
-BAM7_4:           "gene_model_RNA/mapped_reads/single_unstranded_454"
-BAM7_5:           "gene_model_RNA/mapped_reads/paired_unstranded_illumina"
-
-FASTQ_CLEAN1a:    "paired_stranded_illumina/clean_reads/{SAMPLES}_R1_001.fastq.gz"
-FASTQ_CLEAN1b:    "paired_stranded_illumina/clean_reads/{SAMPLES}_R2_001.fastq.gz"
-FASTQ_CLEAN2:     "single_stranded_illumina/clean_reads/{SAMPLES}_R1.fastq.gz"
-FASTQ_CLEAN3:     "single_unstranded_illumina/clean_reads/{SAMPLES}_R1.fastq.gz"
-FASTQ_CLEAN4:     "single_unstranded_454/supersuperclean_reads/{SAMPLES}_R1.fastq.gz"
-FASTQ_CLEAN5a:    "paired_unstranded_illumina/clean_reads/{SAMPLES}_R1_001.fastq.gz"
-FASTQ_CLEAN5b:    "paired_unstranded_illumina/clean_reads/{SAMPLES}_R2_001.fastq.gz"
+BAM7_1:           "paired_stranded_illumina_1/mapped_reads"
+BAM7_2:           "single_stranded_illumina/mapped_reads"
+BAM7_3:           "single_unstranded_illumina/mapped_reads"
+BAM7_4:           "single_unstranded_454/mapped_reads"
+BAM7_5:           "paired_unstranded_illumina/mapped_reads"
 
 
 #########################################################################################
@@ -306,24 +303,12 @@ FASTQ_CLEAN5b:    "paired_unstranded_illumina/clean_reads/{SAMPLES}_R2_001.fastq
 GENE_MODEL8:      "gene_model_protein/gene_model"
 ANNOTATION8:      "gene_model_protein/annotation"
 COUNTS8:          "gene_model_protein/counts"
-MAPPED8:          "gene_model_protein/mapped_reads"
-MULTIQC8:         "gene_model_protein/multiqc"
-BAM8_1:           "gene_model_protein/mapped_reads/paired_stranded_illumina"
-BAM8_2:           "gene_model_protein/mapped_reads/single_stranded_illumina"
-BAM8_3:           "gene_model_protein/mapped_reads/single_unstranded_illumina"
-BAM8_4:           "gene_model_protein/mapped_reads/single_unstranded_454"
-BAM8_5:           "gene_model_protein/mapped_reads/paired_unstranded_illumina"
+BAM8_1:           "paired_stranded_illumina_1/mapped_reads"
 
 #########################################################################################
 ## Directories for comparing gene models
 
 GENE_MODEL9:      "gene_model_compared/gene_model"
 COUNTS9:          "gene_model_compared/counts"
-MAPPED9:          "gene_model_compared/mapped_reads"
-MULTIQC9:         "gene_model_compared/multiqc_all"
-BAM9_1:           "gene_model_compared/mapped_reads/paired_stranded_illumina"
-BAM9_2:           "gene_model_compared/mapped_reads/single_stranded_illumina"
-BAM9_3:           "gene_model_compared/mapped_reads/single_unstranded_illumina"
-BAM9_4:           "gene_model_compared/mapped_reads/single_unstranded_454"
-BAM9_5:           "gene_model_compared/mapped_reads/paired_unstranded_illumina"
+BAM9_1:           "paired_stranded_illumina_1/mapped_reads"
 

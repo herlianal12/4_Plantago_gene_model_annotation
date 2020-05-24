@@ -13,7 +13,7 @@ max-status-checks-per-second:
 local-cores:
   1
 jobs:
-  100
+  300
 cluster-config:
  - "cluster-configs/default.yaml"
- - "cluster-configs/training.yaml"
+ - "cluster-configs/phoenix.yaml"

@@ -19,7 +19,7 @@ QC1             = config["QC1"]
 MULTIQC1        = config["MULTIQC1"]
 MAPPED_PAC      = config["MAPPED_PAC"]
 MAPPED_HiC      = config["MAPPED_HiC"]
-
+GENOME          = config["GENOME"]
 
 
 ################
@@ -29,24 +29,26 @@ MAPPED_HiC      = config["MAPPED_HiC"]
 # the list of ALL the files you want the workflow to create. e.g.:
 rule all:
 	input:
-		REFERENCES+"/Plantago.fasta.gz",
-		INDEX_PAC+"/Plantago.fasta.mmi",
-		INDEX_HiC+"/Plantago.fasta.amb",
-		expand(RAW_FASTQ+"/{SAMPLE}.fastq.gz", SAMPLE=SAMPLES_PAC),
-		expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES_PAC),
-		MULTIQC1+"/multiqc_report.html",
-		expand(MAPPED_PAC+"/{SAMPLE}.bam", SAMPLE=SAMPLES_PAC),
-		MAPPED_PAC+"/merge.bam",
-		expand(MAPPED_PAC+"/{SAMPLE}.bam.bai", SAMPLE=SAMPLES_PAC),
-		MAPPED_PAC+"/merge.bam.bai",
-		expand(MAPPED_PAC+"/{SAMPLE}.cram", SAMPLE=SAMPLES_PAC),
-		MAPPED_PAC+"/merge.cram",
-		expand(MAPPED_PAC+"/{SAMPLE}.cram.crai", SAMPLE=SAMPLES_PAC),
-		MAPPED_PAC+"/merge.cram.crai",
+		#REFERENCES+"/Plantago.fasta.gz",
+		#INDEX_PAC+"/Plantago.fasta.mmi",
+		#INDEX_HiC+"/Plantago.fasta.amb",
+		#expand(RAW_FASTQ+"/{SAMPLE}.fastq.gz", SAMPLE=SAMPLES_PAC),
+		#expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES_PAC),
+		#MULTIQC1+"/multiqc_report.html",
+		#expand(MAPPED_PAC+"/{SAMPLE}.bam", SAMPLE=SAMPLES_PAC),
+		#MAPPED_PAC+"/merge.bam",
+		#expand(MAPPED_PAC+"/{SAMPLE}.bam.bai", SAMPLE=SAMPLES_PAC),
+		#MAPPED_PAC+"/merge.bam.bai",
+		#expand(MAPPED_PAC+"/{SAMPLE}.cram", SAMPLE=SAMPLES_PAC),
+		#MAPPED_PAC+"/merge.cram",
+		#expand(MAPPED_PAC+"/{SAMPLE}.cram.crai", SAMPLE=SAMPLES_PAC),
+		#MAPPED_PAC+"/merge.cram.crai",
 		#expand(MAPPED_HiC+"/{SAMPLE}.bam", SAMPLE=SAMPLES_HiC),
 		#expand(MAPPED_HiC+"/{SAMPLE}.bam.bai", SAMPLE=SAMPLES_HiC),
 		#expand(MAPPED_HiC+"/{SAMPLE}.cram", SAMPLE=SAMPLES_HiC),
 		#expand(MAPPED_HiC+"/{SAMPLE}.cram.crai", SAMPLE=SAMPLES_HiC),
+		RAW_FASTQ+"/Plantago_pacbio.fastq.gz",
+		GENOME+"/Po.contigs.fasta",
 
 ################
 # Rules Proper #
@@ -308,4 +310,38 @@ rule samtools_bai_HiC:
 	shell:
  		"""
 		samtools index {params} {input} {output}
+		"""
+
+rule merge:
+	input:
+		file1 = RAW_FASTQ+"/m54078_170831_060817.subreads.fastq.gz",
+		file2 = RAW_FASTQ+"/m54078_170831_160707.subreads.fastq.gz",
+		file3 = RAW_FASTQ+"/m54078_170901_080645.subreads.fastq.gz",
+		file4 = RAW_FASTQ+"/m54078_170901_180552.subreads.fastq.gz",
+		file5 = RAW_FASTQ+"/m54078_170902_041524.subreads.fastq.gz",
+		file6 = RAW_FASTQ+"/m54078_170902_142504.subreads.fastq.gz",
+		file7 = RAW_FASTQ+"/m54078_170903_003441.subreads.fastq.gz"
+	output:
+		RAW_FASTQ+"/Plantago_pacbio.fastq.gz"
+	shell:
+		"""
+		cat {input.file1} {input.file2} {input.file3} {input.file4} {input.file5} {input.file6} {input.file7} > {output}
+		"""
+
+rule canu:
+	input:
+		RAW_FASTQ+"/Plantago_pacbio.fastq.gz"
+	output:
+		GENOME+"/Po.contigs.fasta"
+	conda:
+		ENVS
+	params:
+		dir = directory(GENOME),
+		prefix = "Po",
+		retry = "canu_retry.sh"
+	shell:
+		"""
+		canu -p {params.prefix} -d {params.dir} genomeSize=591m \
+		executiveMemory=1 gridOptionsBAT="--partition=highmem" obtovlThreads=24 cnsMemory=20 cnsThreads=8 -pacbio-raw {input} \
+		onSuccess=touch onFailure={params.retry}
 		"""
