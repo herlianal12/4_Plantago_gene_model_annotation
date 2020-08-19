@@ -5,26 +5,33 @@
 
 configfile: "config.yaml"
 
-SAMPLES         = config["SAMPLES5"]
+SAMPLES         = config["SAMPLES"]
 READS           = config["READS1"]
 ENVS            = config["ENVS"]
-REFERENCES	= config["REFERENCES"]
+REFERENCES      = config["REFERENCES"]
 LOGS            = config["LOGS"]
 ADAPTERS        = config["ADAPTERS"]
 RRNA            = config["RRNA"]
-DIR             = config["DIR6"]
-RAW             = config["RAW6"]
-QC1             = config["QC6_1"]
-MULTIQC1        = config["MULTIQC6_1"]
-TRIMMED         = config["TRIMMED6"]
-QC2             = config["QC6_2"]
-MULTIQC2        = config["MULTIQC6_2"]
-CLEAN           = config["CLEAN6"]
-MULTIQC3        = config["MULTIQC6_3"]
-MULTIQC4        = config["MULTIQC6_4"]
-MAPPED          = config["MAPPED6"]
-MULTIQC5        = config["MULTIQC6_5"]
-CUFFLINK        = config["CUFFLINK6"]
+DIR             = config["DIR2"]
+RAW             = config["RAW2"]
+QC1             = config["QC2_1"]
+MULTIQC1        = config["MULTIQC2_1"]
+TRIMMED         = config["TRIMMED2_1"]
+QC2             = config["QC2_2"]
+MULTIQC2        = config["MULTIQC2_2"]
+CLEAN           = config["CLEAN2"]
+QC3             = config["QC2_3"]
+MULTIQC3        = config["MULTIQC2_3"]
+MULTIQC4        = config["MULTIQC2_4"]
+MAPPED          = config["MAPPED2"]
+MULTIQC5        = config["MULTIQC2_5"]
+MULTIQC6        = config["MULTIQC2_6"]
+CUFFLINK        = config["CUFFLINK2"]
+MERGED          = config["MERGED2"]
+SAMPLES1        = config["SAMPLES1"]
+GENE_MODEL      = config["GENE_MODEL7"]
+COUNTS          = config["COUNTS7"]
+BAM1            = config["BAM7_1"]
 
 ################
 # Pseudo-rules #
@@ -41,13 +48,15 @@ rule all:
 		MULTIQC2+"/multiqc_report.html",
 		expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
 		expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES),
+		expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
 		MULTIQC3+"/multiqc_report.html",
-		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
 		MULTIQC4+"/multiqc_report.html",
+		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
+		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES),
+		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES),
 		MULTIQC5+"/multiqc_report.html",
-		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
-		CUFFLINK+"/assemblies.txt",
-		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES)
+		MULTIQC6+"/multiqc_report.html",
+		COUNTS+"/counts_2.out"
 
 ################
 # Rules Proper #
@@ -82,7 +91,7 @@ rule fastqc_raw:
 		ENVS
 	log:
 		LOGS+"/fastqc_raw/{SAMPLE}"
-	params: 
+	params:
 		QC1
 	shell:
 		"""
@@ -110,21 +119,21 @@ rule multiqc_raw:
 
 rule trimmomatic:
 	input:
-		r1 = RAW+"/{SAMPLE}_R1_001.fastq.gz",
-		r2 = RAW+"/{SAMPLE}_R2_001.fastq.gz",
+		r1 = RAW+"/{SAMPLES}_R1_001.fastq.gz",
+		r2 = RAW+"/{SAMPLES}_R2_001.fastq.gz",
 		adapters = ADAPTERS
 	output:
-		r1 = TRIMMED+"/{SAMPLE}_R1_001.fastq.gz",
-		r1_unpaired = TRIMMED+"/{SAMPLE}_R1_001.unpaired.fastq.gz",
-		r2 = TRIMMED+"/{SAMPLE}_R2_001.fastq.gz",
-		r2_unpaired = TRIMMED+"/{SAMPLE}_R2_001.unpaired.fastq.gz"
+		r1 = TRIMMED+"/{SAMPLES}_R1_001.fastq.gz",
+		r1_unpaired = TRIMMED+"/{SAMPLES}_R1_001.unpaired.fastq.gz",
+		r2 = TRIMMED+"/{SAMPLES}_R2_001.fastq.gz",
+		r2_unpaired = TRIMMED+"/{SAMPLES}_R2_001.unpaired.fastq.gz"
 	conda:
 		ENVS
 	log:
-		r1 = LOGS+"/trimmomatic/{SAMPLE}_R1_001",
-		r2 = LOGS+"/trimmomatic/{SAMPLE}_R1_001.unpaired",
-		r1_unpaired = LOGS+"/trimmomatic/{SAMPLE}_R2_001",
-		r2_unpaired = LOGS+"/trimmomatic/{SAMPLE}_R2_001.unpaired"
+		r1 = LOGS+"/trimmomatic/{SAMPLES}_R1_001",
+		r2 = LOGS+"/trimmomatic/{SAMPLES}_R1_001.unpaired",
+		r1_unpaired = LOGS+"/trimmomatic/{SAMPLES}_R2_001",
+		r2_unpaired = LOGS+"/trimmomatic/{SAMPLES}_R2_001.unpaired"
 	shell:
 		"""
 		trimmomatic PE -threads 2 {input.r1} {input.r2} {output.r1} {output.r1_unpaired} {output.r2} {output.r2_unpaired} ILLUMINACLIP:{input.adapters}:2:30:10:3:true LEADING:2 TRAILING:2 SLIDINGWINDOW:4:15 MINLEN:36
@@ -194,24 +203,61 @@ rule bbmap:
 		LOGS+"/bbmap/{SAMPLES}.bbduk.log"
 	shell:
 		"""
-		bbduk.sh -Xmx20g in1={input.file1} in2={input.file2} out1={output.clean1} out2={output.clean2} \
-		outm1={output.conta1} outm2={output.conta2} stats={output.statistic} \
-		ref={input.ref1},{input.ref2},{input.ref3},{input.ref4},{input.ref5},{input.ref6},{input.ref7},{input.ref8},{input.ref9},{input.ref10},{input.ref11},{input.ref12}	
+		bbduk.sh -Xmx20g in1={input.file1} \
+		in2={input.file2} out1={output.clean1} \
+		out2={output.clean2} outm1={output.conta1} \
+		outm2={output.conta2} stats={output.statistic} \
+		ref={input.ref1},{input.ref2},{input.ref3},{input.ref4},{input.ref5},{input.ref6},{input.ref7},{input.ref8},{input.ref9},{input.ref10},{input.ref11},{input.ref12}
+		"""
+
+rule fastqc_clean:
+	input:
+		CLEAN+"/{SAMPLE}.fastq.gz"
+	output:
+		zip = QC3+"/{SAMPLE}_fastqc.zip",
+		html = QC3+"/{SAMPLE}_fastqc.html"
+	conda:
+		ENVS
+	log:
+		LOGS+"/fastqc_clean/{SAMPLE}"
+	params:
+		QC3
+	shell:
+		"""
+		fastqc -o {params} --threads 2 {input}
 		2> {log}
 		"""
 
 rule multiqc_clean:
 	input:
-		expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES)
+              	expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS)
 	output:
 		MULTIQC3+"/multiqc_report.html"
+	conda:
+		"envs/multiqc.yaml"
+	log:
+		LOGS+"/multiqc_clean_qc/multiqc_report"
+	params:
+		indir = QC3 ,
+		outdir = MULTIQC3
+	shell:
+		"""
+		multiqc {params.indir} -o {params.outdir}
+		2> {log}
+		"""
+
+rule multiqc_clean_stat:
+	input:
+		expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES)
+	output:
+		MULTIQC4+"/multiqc_report.html"
 	conda:
 		"envs/multiqc.yaml"
 	log:
 		LOGS+"/multiqc_clean/multiqc_report"
 	params:
 		indir = CLEAN ,
-		outdir = MULTIQC3
+		outdir = MULTIQC4
 	shell:
 		"""
 		multiqc {params.indir} -o {params.outdir}
@@ -228,102 +274,50 @@ rule star_mapping:
 		out2 = MAPPED+"/{SAMPLES}Log.final.out",
 		out3 = MAPPED+"/{SAMPLES}Log.out",
 		out4 = MAPPED+"/{SAMPLES}Log.progress.out",
-		out5 = MAPPED+"/{SAMPLES}SJ.out.tab"
+		out5 = MAPPED+"/{SAMPLES}SJ.out.tab",
 	conda:
 		ENVS
 	log:
-		LOGS+"/star_mapping/{SAMPLES}"
+		log1 = LOGS+"/star_mapping/{SAMPLES}",
 	params:
 		bam = directory(MAPPED),
 		outfile = MAPPED+"/{SAMPLES}"
 	shell:
 		"""
 		mkdir --parents {params.bam} &&
-		STAR --runThreadN 8 \
+		STAR --runThreadN 4 \
 		--genomeDir {input.index} \
 		--readFilesIn {input.file1} {input.file2} \
 		--readFilesCommand gunzip -c \
 		--outFileNamePrefix {params.outfile} \
 		--outSAMtype BAM SortedByCoordinate \
 		--alignIntronMax 10000 \
-		--outFilterScoreMinOverLread 0.75 \
+		--alignMatesGapMax 10000 \
+		--outFilterScoreMinOverLread 0.8 \
 		--outSJfilterCountUniqueMin 5 1 1 1 \
 		--outSJfilterOverhangMin 35 20 20 20 \
-		--outSAMstrandField intronMotif \
-		--outFilterIntronMotifs RemoveNoncanonical \
 		--outSAMattributes NM XS \
+		--outFilterIntronMotifs RemoveNoncanonical \
 		--outSAMattrIHstart 0 \
 		--alignSoftClipAtReferenceEnds No
 		> {log}
 		"""
 
-rule multiqc_star:
+rule sort:
 	input:
-		expand(MAPPED+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES)
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
 	output:
-		MULTIQC4+"/multiqc_report.html"
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.sorted.bam"
 	conda:
-		"envs/multiqc.yaml"
-	log:
-		LOGS+"/multiqc_star/multiqc_report"
+		ENVS
 	params:
-		indir = MAPPED ,
-		outdir = MULTIQC4
+		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.sorted"
 	shell:
-		"""
-		multiqc {params.indir} -o {params.outdir}
-		2> {log}
-		"""
-
-rule multiqc_all:
-	input:
-		trimmed = expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		clean = expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES),
-		mapped = expand(MAPPED+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES, READ=READS),
-	output:
-		MULTIQC5+"/multiqc_report.html"
-	conda:
-		"envs/multiqc.yaml"
-	log:
-		LOGS+"/multiqc_all/multiqc_report"
-	params:
-		indir1 = QC2 ,
-		indir2 = CLEAN ,
-		indir3 = MAPPED ,
-		outdir = MULTIQC5
-	shell:
-		"""
-		multiqc {params.indir1} {params.indir2} {params.indir3} -o {params.outdir}
+		""" 
+		samtools sort -l 9 -n -T {params} -o {output} {input}
 		"""
 
-rule cufflink:
-	input:
-		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam"
-	output:
-		CUFFLINK+"/{SAMPLES}/transcripts.gtf"
-	conda:
-		"envs/cufflinks.yaml"
-	log:
-		LOGS+"/cufflink/{SAMPLES}"
-	params:
-		CUFFLINK+"/{SAMPLES}"
-	shell:
-		"""
-		cufflinks -I 10000 --output-dir {params} {input} \
-		> {log}
-		"""
-
-rule compose_merge:
-	input:
-		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
-	output:
-		txt=CUFFLINK+"/assemblies.txt"
-	log:
-		LOGS+"/compare_merge.log"
-	run:
-		with open(output.txt, "w") as out: print(*input, sep="\n", file=out)
-
-rule samtools_bai1:
+rule samtools_bai:
 	input:
 		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam"
 	output:
@@ -335,4 +329,56 @@ rule samtools_bai1:
 	shell:
 		"""
 		samtools index {params} {input} {output}
+		"""
+
+rule multiqc_star:
+	input:
+		expand(MAPPED+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES)
+	output:
+		MULTIQC5+"/multiqc_report.html"
+	conda:
+		"envs/multiqc.yaml"
+	params:
+		indir = MAPPED ,
+		outdir = MULTIQC5
+	shell:
+		"""
+		multiqc {params.indir} -o {params.outdir}
+		"""
+
+rule multiqc_all:
+	input:
+		trimmed = expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		clean = expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES),
+		mapped = expand(MAPPED+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES, READ=READS),
+	output:
+		MULTIQC6+"/multiqc_report.html"
+	conda:
+		"envs/multiqc.yaml"
+	params:
+		indir1 = QC2 ,
+		indir2 = CLEAN ,
+		indir3 = MAPPED ,
+		outdir = MULTIQC6
+	shell:
+		"""
+		multiqc {params.indir1} {params.indir2} {params.indir3} -o {params.outdir}
+		"""
+
+rule counts:
+	input:
+		bam = expand(BAM1+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES1),
+		gtf = GENE_MODEL+"/gene_model_RNA.gtf",
+	output:
+		COUNTS+"/counts_2.out",
+	conda:
+		ENVS
+	log:
+		LOGS+"/counts_2.summary"
+	params:
+		COUNTS
+	shell:
+		"""
+		featureCounts -Q 10 -t exon -g gene_id -O -s 2 -p -T 5 -a {input.gtf} -o {output} {input.bam} \
+		> {log}
 		"""

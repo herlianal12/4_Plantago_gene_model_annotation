@@ -32,7 +32,7 @@ rule all:
 		GENE_MODEL+"/candidate_ncRNA.gff3",
 		GENE_MODEL+"/candidate_ncRNA_inter_anti.gff3",
 		GENE_MODEL+"/candidate_ncRNA_intergenic.gff3",
-		GENE_MODEL+"/protein_noRNAdata.gff3",
+		#GENE_MODEL+"/protein_noRNAdata.gff3",
 		GENE_MODEL+"/candidate_ncRNA_intronicexonic.gff3",
 		GENE_MODEL+"/candidate_ncRNA_antisense.gff3",
 		GENE_MODEL+"/transcript/sncRNA.gff3",
@@ -46,7 +46,7 @@ rule all:
 		expand(GENE_MODEL+"/transcript/{SAMPLE}.fasta", SAMPLE=NON_CODING),
 		GENE_MODEL+"/rnacentral/rnacentral_species_specific_ids.fasta.nal",
 		expand(GENE_MODEL+"/transcript/{SAMPLE}_blastn.outfmt6", SAMPLE=NON_CODING),
-		expand(GENE_MODEL+"/transcript/{SAMPLE}_tblastx.outfmt6", SAMPLE=NON_CODING),
+		#expand(GENE_MODEL+"/transcript/{SAMPLE}_tblastx.outfmt6", SAMPLE=NON_CODING),
 		GENE_MODEL+"/gene_model_merge.gff3",
 		COUNTS+"/counts.out",
 
@@ -150,7 +150,7 @@ rule protein_noRNAdata:
 
 rule ncRNA_fasta:
 	input:
-		references = REFERENCES+"/Plantago.fasta.gz",
+		references = REFERENCES+"/Plantago.fasta",
 		ncRNA = GENE_MODEL+"/transcript/{SAMPLE}.gff3",
 	output:
 		ncRNA = GENE_MODEL+"/transcript/{SAMPLE}.fasta",

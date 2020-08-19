@@ -47,11 +47,12 @@ rule all:
 		GENE_MODEL+"/transcript.fasta.transdecoder.pep",
 		GENE_MODEL+"/transcript.fasta.transdecoder.gff3",
 		GENE_MODEL+"/gene_model_protein.gff3",
-		ANNOTATION+"/transcript.fasta.transdecoder_summary.signalp5",
-		ANNOTATION+"/transcript.fasta.transdecoder_summary.targetp2",
+		#ANNOTATION+"/transcript.fasta.transdecoder_summary.signalp5",
+		#ANNOTATION+"/transcript.fasta.transdecoder_summary.targetp2",
 		#COUNTS+"/counts.out",
 		#COUNTS+"/counts_2.out",
 		COUNTS+"/counts_3.out",
+		ANNOTATION+"/transcript.fasta.seq_lens"
 
 ################
 # Rules Proper #
@@ -59,16 +60,15 @@ rule all:
 
 rule gtftofasta:
 	input:
-		GENE_MODEL_RNA+"/gene_model_RNA.gtf"
+		gtf = GENE_MODEL_RNA+"/gene_model_RNA.gtf",
+		ref = REFERENCES+"/Plantago.fasta"
 	output:
 		GENE_MODEL+"/transcript.fasta"
 	conda:
 		ENVS
-	params:
-		REFERENCES+"/Plantago.fasta"
 	shell:
 		"""
-		gtf_genome_to_cdna_fasta.pl {input} {params} > {output}
+		gtf_genome_to_cdna_fasta.pl {input.gtf} {input.ref} > {output}
 		"""
 
 rule gtftogff3:
@@ -97,7 +97,7 @@ rule best_ORF:
 		directory(GENE_MODEL+"/transcript.fasta.transdecoder_dir")
 	shell:
 		"""
-		TransDecoder.LongOrfs -m 50 -t {input} --output_dir {params}
+		TransDecoder.LongOrfs -S -m 50 -t {input} --output_dir {params}
 		"""
 
 rule database_uniprot:
@@ -193,8 +193,7 @@ rule predict_transcript:
 		o4 = "transcript.fasta.transdecoder.gff3"
 	shell:
 		"""
-		TransDecoder.Predict -t {input.fasta} \
-		--retain_blastp_hits {input.blastp} --retain_pfam_hits {input.pfam} --output_dir {params.dir} &&
+		TransDecoder.Predict -t {input.fasta} --retain_blastp_hits {input.blastp} --retain_pfam_hits {input.pfam} --output_dir {params.dir} &&
 		mv {params.o1} {output.o1}
 		mv {params.o2} {output.o2}
 		mv {params.o3} {output.o3}
@@ -350,7 +349,18 @@ rule counts_3:
 		COUNTS        
 	shell:                
 		"""
-		featureCounts -t gene -g ID -O -s 2 -p -T 5 -F GFF -a {input.gff} -o {output} {input.bam} \
+		featureCounts -Q 10 -t gene -g ID -O -s 2 -p -T 5 -F GFF -a {input.gff} -o {output} {input.bam} \
 		> {log}
 		"""
 
+rule gene_length:
+	input:
+		GENE_MODEL+"/transcript.fasta"
+	output:
+		ANNOTATION+"/transcript.fasta.seq_lens"
+	conda:
+		"envs/trinity.yaml"
+	shell:
+		"""
+		fasta_seq_length.pl {input} > {output}
+		"""

@@ -1,0 +1,82 @@
+# A global singularity image to be used for all jobs - need to specify --use-singularity and have singularity available on the command line
+# This image already contains the bioinformatic tools we will be using singularity:
+#"file:///shared/.singularity/nextflow-embl-abr-webinar.simg", 
+"docker://rsuchecki/nextflow-embl-abr-webinar"
+
+configfile: "config.yaml"
+
+SAMPLES1        = config["SAMPLES1"]
+ENVS            = config["ENVS"]
+REFERENCES	= config["REFERENCES"]
+LOGS            = config["LOGS"]
+DIR             = config["DIR7"]
+GENE_MODEL_RNA  = config["GENE_MODEL7"]
+GENE_MODEL	= config["GENE_MODEL8"]
+ANNOTATION      = config["ANNOTATION8"]
+COUNTS          = config["COUNTS8"]
+BAM1            = config["BAM8_1"]
+
+################
+# Pseudo-rules #
+################
+# By convention, the first rule should be called "all" and it's "input" defined as
+# the list of ALL the files you want the workflow to create. e.g.:
+rule all:
+	input:
+		ANNOTATION+"/uniprot_At/uniprot_sprot_At.pep.phr",
+		ANNOTATION+"/uniprot_At/uniprot_sprot_At.pep.pin",
+		ANNOTATION+"/uniprot_At/uniprot_sprot_At.pep.psq",
+		ANNOTATION+"/blastp_At.outfmt6",
+		ANNOTATION+"/trinotate_annotation_report_At.xls",
+
+################
+# Rules Proper #
+################
+
+rule database_uniprot:
+	input:
+		ANNOTATION+"/uniprot_At/uniprot_sprot_At.pep"
+	output:
+		one = ANNOTATION+"/uniprot_At/uniprot_sprot_At.pep.phr",
+		two = ANNOTATION+"/uniprot_At/uniprot_sprot_At.pep.pin",
+		three = ANNOTATION+"/uniprot_At/uniprot_sprot_At.pep.psq"
+	conda:
+		ENVS
+	shell:
+		"""
+		makeblastdb -in {input} -dbtype prot
+		"""
+
+rule blastP:
+	input:
+		GENE_MODEL+"/transcript.fasta.transdecoder.pep"
+	output:
+		ANNOTATION+"/blastp_At.outfmt6"
+	conda:
+		ENVS
+	params:
+		ANNOTATION+"/uniprot_At/uniprot_sprot_At.pep"
+	shell:
+		"""
+		blastp -query {input} -db {params} -max_target_seqs 1 \
+		-outfmt 6 -evalue 1e-3 -num_threads 8 -out {output}
+		"""
+
+rule trinotate:
+	input:
+		map = GENE_MODEL+"/transcript.fasta.gene_trans_map",
+		file = ANNOTATION+"/Trinotate.sqlite",
+		fasta = GENE_MODEL+"/transcript.fasta",
+		pep = GENE_MODEL+"/transcript.fasta.transdecoder.pep",
+		blastp = ANNOTATION+"/blastp_At.outfmt6",
+	output:
+		ANNOTATION+"/trinotate_annotation_report_At.xls"
+	conda:
+		ENVS
+	shell:
+		"""
+		Trinotate {input.file} init --gene_trans_map {input.map} --transcript_fasta {input.fasta} \
+		--transdecoder_pep {input.pep} &&
+		Trinotate {input.file} LOAD_swissprot_blastp {input.blastp} &&
+		Trinotate {input.file} report -E 1e-3 > {output}
+		"""

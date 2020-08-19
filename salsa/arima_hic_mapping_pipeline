@@ -1,0 +1,68 @@
+#!/bin/bash
+#SBATCH --partition batch
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 12
+#SBATCH --time 48:00:00
+#SBATCH --mem 10G
+
+# Notification configuration
+#SBATCH --mail-type=FAIL, END
+#SBATCH --mail-user=lina.herliana@adelaide.edu.au
+
+#####https://usermanual.wiki/Document/ArimaMappingUserGuideA160156v01.424413804.pdf
+SRA='Povata-HiC_combined'
+LABEL='Plantago' 
+BWA='/fast/users/a1697274/snakemake/.conda/envs/assembly/bin/bwa' 
+SAMTOOLS='/fast/users/a1697274/snakemake/.conda/envs/assembly/bin/samtools' 
+IN_DIR='/fast/users/a1697274/snakemake/bioinformatics/assembly/plantago_genome_sequences/HiC'
+REF='/fast/users/a1697274/snakemake/bioinformatics/salsa/Po.contigs.fasta'
+FAIDX='$REF.fai'
+PREFIX='Po.contigs.fasta'
+RAW_DIR='/fast/users/a1697274/snakemake/bioinformatics/salsa/mapped'
+FILT_DIR='/fast/users/a1697274/snakemake/bioinformatics/salsa/filtered'
+FILTER='/fast/users/a1697274/snakemake/bioinformatics/salsa/mapping_pipeline/filter_five_end.pl' 
+COMBINER='/fast/users/a1697274/snakemake/bioinformatics/salsa/mapping_pipeline/two_read_bam_combiner.pl'
+STATS='/fast/users/a1697274/snakemake/bioinformatics/salsa/mapping_pipeline/get_stats.pl' 
+#PICARD='/fast/users/a1697274/snakemake/bioinformatics/salsa/picard.jar'
+PICARD='/fast/users/a1697274/snakemake/.conda/envs/assembly/bin/picard'
+TMP_DIR='/fast/users/a1697274/snakemake/bioinformatics/salsa/tmp' 
+PAIR_DIR='/fast/users/a1697274/snakemake/bioinformatics/salsa/paired' 
+REP_DIR='/fast/users/a1697274/snakemake/bioinformatics/salsa/deduplicated'
+REP_LABEL=$LABEL\_rep1
+MERGE_DIR='/fast/users/a1697274/snakemake/bioinformatics/salsa/mapping_pipeline/merged'
+MAPQ_FILTER=10
+CPU=12
+#JAVA='/fast/users/a1697274/snakemake/.conda/envs/salsa2/bin/java'
+
+#echo "### Step 0: Check output directories exist & create them as needed" 
+#[ -d $RAW_DIR ] || mkdir -p $RAW_DIR
+#[ -d $FILT_DIR ] || mkdir -p $FILT_DIR
+#[ -d $TMP_DIR ] || mkdir -p $TMP_DIR
+#[ -d $PAIR_DIR ] || mkdir -p $PAIR_DIR
+#[ -d $REP_DIR ] || mkdir -p $REP_DIR
+#[ -d $MERGE_DIR ] || mkdir -p $MERGE_DIR
+
+# Run only once! Skip this step if you have already generated BWA index files
+#echo "### Step 0: Index reference"
+#$BWA index -a bwtsw -p $PREFIX $REF
+
+#echo "### Step 1.A: FASTQ to BAM (1st)"
+#$BWA mem -t $CPU $REF $IN_DIR/$SRA\_R1.fastq.gz | $SAMTOOLS view -@ $CPU -Sb - > $RAW_DIR/$SRA\_R1.bam
+
+
+#echo "### Step 1.B: FASTQ to BAM (2nd)"
+#$BWA mem -t $CPU $REF $IN_DIR/$SRA\_R2.fastq.gz | $SAMTOOLS view -@ $CPU -Sb - > $RAW_DIR/$SRA\_R2.bam
+
+#echo "### Step 2.A: Filter 5' end (1st)"
+#$SAMTOOLS view -h $RAW_DIR/$SRA\_R1.bam | perl $FILTER | $SAMTOOLS view -Sb - > $FILT_DIR/$SRA\_R1.bam
+
+#echo "### Step 2.B: Filter 5' end (2nd)"
+#$SAMTOOLS view -h $RAW_DIR/$SRA\_R2.bam | perl $FILTER | $SAMTOOLS view -Sb - > $FILT_DIR/$SRA\_R2.bam
+
+#echo "### Step 3A: Pair reads & mapping quality filter"
+#perl $COMBINER $FILT_DIR/$SRA\_R1.bam $FILT_DIR/$SRA\_R2.bam $SAMTOOLS $MAPQ_FILTER | $SAMTOOLS view -bS -t $FAIDX - | $SAMTOOLS sort -@ $CPU -o $TMP_DIR/$SRA.bam -
+
+echo "### Step 3.B: Add read group"
+#$JAVA -Xmx4G -Djava.io.tmpdir=temp/ -jar $PICARD AddOrReplaceReadGroups INPUT=$TMP_DIR/$SRA.bam OUTPUT=$PAIR_DIR/$SRA.bam ID=$SRA LB=$SRA SM=$LABEL PL=ILLUMINA PU=none
+
+$PICARD AddOrReplaceReadGroups INPUT=$TMP_DIR/$SRA.bam OUTPUT=$PAIR_DIR/$SRA.bam ID=$SRA LB=$SRA SM=$LABEL PL=ILLUMINA PU=none 

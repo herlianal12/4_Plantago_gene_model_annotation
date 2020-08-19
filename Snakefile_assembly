@@ -32,7 +32,7 @@ rule all:
 		#REFERENCES+"/Plantago.fasta.gz",
 		#INDEX_PAC+"/Plantago.fasta.mmi",
 		#INDEX_HiC+"/Plantago.fasta.amb",
-		#expand(RAW_FASTQ+"/{SAMPLE}.fastq.gz", SAMPLE=SAMPLES_PAC),
+		expand(RAW_FASTQ+"/{SAMPLE}.fastq.gz", SAMPLE=SAMPLES_PAC),
 		#expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES_PAC),
 		#MULTIQC1+"/multiqc_report.html",
 		#expand(MAPPED_PAC+"/{SAMPLE}.bam", SAMPLE=SAMPLES_PAC),
@@ -54,36 +54,36 @@ rule all:
 # Rules Proper #
 ################
 
-rule minimap2_index:
-	input:
-		REFERENCES+"/Plantago.fasta.gz"
-	output:
-		INDEX_PAC+"/Plantago.fasta.gz.mmi"
-	conda:
-		ENVS
-	log:
-		LOGS+"/minimap2_index"
-	shell:
-		"""
-		minimap2 -d {output} {input}
-		2> {log}
-		"""
+#rule minimap2_index:
+#	input:
+#		REFERENCES+"/Plantago.fasta.gz"
+#	output:
+#		INDEX_PAC+"/Plantago.fasta.gz.mmi"
+#	conda:
+#		ENVS
+#	log:
+#		LOGS+"/minimap2_index"
+#	shell:
+#		"""
+#		minimap2 -d {output} {input}
+#		2> {log}
+#		"""
 
-rule bwa_index:
-	input:
-		INDEX_HiC+"/Plantago.fasta.gz"
-	output:
-		o1 = INDEX_HiC+"/Plantago.fasta.gz.amb",
-		o2 = INDEX_HiC+"/Plantago.fasta.gz.ann",
-		o3 = INDEX_HiC+"/Plantago.fasta.gz.bwt",
-		o4 = INDEX_HiC+"/Plantago.fasta.gz.pac",
-		o5 = INDEX_HiC+"/Plantago.fasta.gz.sa",
-	conda:
-		ENVS
-	shell:
-		"""
-		bwa index -a bwtsw {input} > {output}
-		"""
+#rule bwa_index:
+#	input:
+#		INDEX_HiC+"/Plantago.fasta.gz"
+#	output:
+#		o1 = INDEX_HiC+"/Plantago.fasta.gz.amb",
+#		o2 = INDEX_HiC+"/Plantago.fasta.gz.ann",
+#		o3 = INDEX_HiC+"/Plantago.fasta.gz.bwt",
+#		o4 = INDEX_HiC+"/Plantago.fasta.gz.pac",
+#		o5 = INDEX_HiC+"/Plantago.fasta.gz.sa",
+#	conda:
+#		ENVS
+#	shell:
+#		"""
+#		bwa index -a bwtsw {input} > {output}
+#		"""
 		
 rule bam2fastq:
 	input:
@@ -102,215 +102,215 @@ rule bam2fastq:
 		> {log}
 		"""
 
-rule fastqc_raw:
-	input:
-		RAW_FASTQ+"/{SAMPLE}.fastq.gz"
-	output:
-		zip = QC1+"/{SAMPLE}_fastqc.zip",
-		html = QC1+"/{SAMPLE}_fastqc.html"
-	conda:
-		ENVS
-	log:
-		LOGS+"/fastqc_raw/{SAMPLE}"
-	params: 
-		QC1
-	shell:
-		"""
-		fastqc -o {params} --threads 2 {input}
-		2> {log}
-		"""
+#rule fastqc_raw:
+#	input:
+#		RAW_FASTQ+"/{SAMPLE}.fastq.gz"
+#	output:
+#		zip = QC1+"/{SAMPLE}_fastqc.zip",
+#		html = QC1+"/{SAMPLE}_fastqc.html"
+#	conda:
+#		ENVS
+#	log:
+#		LOGS+"/fastqc_raw/{SAMPLE}"
+#	params: 
+#		QC1
+#	shell:
+#		"""
+#		fastqc -o {params} --threads 2 {input}
+#		2> {log}
+#		"""
 
-rule multiqc_raw:
-	input:
-		expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES_PAC)
-	output:
-		MULTIQC1+"/multiqc_report.html"
-	conda:
-		ENVS
-	log:
-		LOGS+"/multiqc_raw/multiqc_report"
-	params:
-		indir = QC1 ,
-		outdir = MULTIQC1
-	shell:
-		"""
-		multiqc {params.indir} -o {params.outdir}
-		2> {log}
-		"""
+#rule multiqc_raw:
+#	input:
+#		expand(QC1+"/{SAMPLE}_fastqc.html", SAMPLE=SAMPLES_PAC)
+#	output:
+#		MULTIQC1+"/multiqc_report.html"
+#	conda:
+#		ENVS
+#	log:
+#		LOGS+"/multiqc_raw/multiqc_report"
+#	params:
+#		indir = QC1 ,
+#		outdir = MULTIQC1
+#	shell:
+#		"""
+#		multiqc {params.indir} -o {params.outdir}
+#		2> {log}
+#		"""
 
-rule minimap2_mapping:
-	input:
-		data = RAW_FASTQ+"/{SAMPLE}.fastq.gz",
-		index = INDEX_PAC+"/Plantago.fasta.gz.mmi",
-	output:
-		MAPPED_PAC+"/{SAMPLE}.bam",
-	conda:
-		ENVS
-	shell:
-		"""
-		time minimap2 \
-		-ax map-pb \
-		-t 2 {input.index} {input.data} \
-		| samtools view -F 4 -u \
-		| samtools sort \
-		--threads 2 -l 7 \
-		-o {output}
-		"""
+#rule minimap2_mapping:
+#	input:
+#		data = RAW_FASTQ+"/{SAMPLE}.fastq.gz",
+#		index = INDEX_PAC+"/Plantago.fasta.gz.mmi",
+#	output:
+#		MAPPED_PAC+"/{SAMPLE}.bam",
+#	conda:
+#		ENVS
+#	shell:
+#		"""
+#		time minimap2 \
+#		-ax map-pb \
+#		-t 2 {input.index} {input.data} \
+#		| samtools view -F 4 -u \
+#		| samtools sort \
+#		--threads 2 -l 7 \
+#		-o {output}
+#		"""
 
-rule samtools_merge:
-	input:
-		expand(MAPPED_PAC+"/{SAMPLE}.bam", SAMPLE=SAMPLES_PAC)
-	output:
-		MAPPED_PAC+"/merge.bam"
-	conda:
-		ENVS
-	params:
-		""
-	shell:
-		"""
-		samtools merge -l 9 {params} {output} {input}
-		"""
+#rule samtools_merge:
+#	input:
+#		expand(MAPPED_PAC+"/{SAMPLE}.bam", SAMPLE=SAMPLES_PAC)
+#	output:
+#		MAPPED_PAC+"/merge.bam"
+#	conda:
+#		ENVS
+#	params:
+#		""
+#	shell:
+#		"""
+#		samtools merge -l 9 {params} {output} {input}
+#		"""
 
-rule samtools_bai:
-	input:
-		MAPPED_PAC+"/{SAMPLE}.bam"
-	output:
-		MAPPED_PAC+"/{SAMPLE}.bam.bai"
-	conda:
-		ENVS
-	params:
-		""
-	shell:
-		"""
-		samtools index {params} {input} {output}
-		"""
+#rule samtools_bai:
+#	input:
+#		MAPPED_PAC+"/{SAMPLE}.bam"
+#	output:
+#		MAPPED_PAC+"/{SAMPLE}.bam.bai"
+#	conda:
+#		ENVS
+#	params:
+#		""
+#	shell:
+#		"""
+#		samtools index {params} {input} {output}
+#		"""
 
-rule samtools_bai_merge:
-	input:
-		MAPPED_PAC+"/merge.bam"
-	output:
-		MAPPED_PAC+"/merge.bam.bai"
-	conda:
-		ENVS
-	params:   
-		""
-	shell:
-		"""
-		samtools index {params} {input} {output}
-		"""
+#rule samtools_bai_merge:
+#	input:
+#		MAPPED_PAC+"/merge.bam"
+#	output:
+#		MAPPED_PAC+"/merge.bam.bai"
+#	conda:
+#		ENVS
+#	params:   
+#		""
+#	shell:
+#		"""
+#		samtools index {params} {input} {output}
+#		"""
 
-rule samtools_cram:
-	input:
-		bam = MAPPED_PAC+"/{SAMPLE}.bam",
-		ref = REFERENCES+"/Plantago.fasta.gz"
-	output:
-		MAPPED_PAC+"/{SAMPLE}.cram"
-	conda:
-		ENVS
-	shell:
-		"""
-		samtools view -T {input.ref} -C -o {output} {input.bam}
-		"""
+#rule samtools_cram:
+#	input:
+#		bam = MAPPED_PAC+"/{SAMPLE}.bam",
+#		ref = REFERENCES+"/Plantago.fasta.gz"
+#	output:
+#		MAPPED_PAC+"/{SAMPLE}.cram"
+#	conda:
+#		ENVS
+#	shell:
+#		"""
+#		samtools view -T {input.ref} -C -o {output} {input.bam}
+#		"""
 
-rule samtools_cram_merge:
-	input:
-		bam = MAPPED_PAC+"/merge.bam",
-		ref = REFERENCES+"/Plantago.fasta.gz"
-	output:
-		MAPPED_PAC+"/merge.cram"
-	conda:
-		ENVS
-	shell:
-		"""
-		samtools view -T {input.ref} -C -o {output} {input.bam}
-		"""
+#rule samtools_cram_merge:
+#	input:
+#		bam = MAPPED_PAC+"/merge.bam",
+#		ref = REFERENCES+"/Plantago.fasta.gz"
+#	output:
+#		MAPPED_PAC+"/merge.cram"
+#	conda:
+#		ENVS
+#	shell:
+#		"""
+#		samtools view -T {input.ref} -C -o {output} {input.bam}
+#		"""
 
-rule samtools_cram_HiC:
-	input:
-		bam = MAPPED_HiC+"/{SAMPLE}.bam",
-		ref = REFERENCES+"/Plantago.fasta.gz"
-	output:
-		MAPPED_HiC+"/{SAMPLE}.cram"
-	conda:
-		ENVS
-	shell:
-		"""
-		samtools view -T {input.ref} -C -o {output} {input.bam}
-		"""
+#rule samtools_cram_HiC:
+#	input:
+#		bam = MAPPED_HiC+"/{SAMPLE}.bam",
+#		ref = REFERENCES+"/Plantago.fasta.gz"
+#	output:
+#		MAPPED_HiC+"/{SAMPLE}.cram"
+#	conda:
+#		ENVS
+#	shell:
+#		"""
+#		samtools view -T {input.ref} -C -o {output} {input.bam}
+#		"""
 
-rule samtools_crai:
-	input:
-		MAPPED_PAC+"/{SAMPLE}.cram"
-	output:
-		MAPPED_PAC+"/{SAMPLE}.cram.crai"
-	conda:
-		ENVS
-	params:
-		""
-	shell:
-		"""
-		samtools index {params} {input} {output}
-		"""
+#rule samtools_crai:
+#	input:
+#		MAPPED_PAC+"/{SAMPLE}.cram"
+#	output:
+#		MAPPED_PAC+"/{SAMPLE}.cram.crai"
+#	conda:
+#		ENVS
+#	params:
+#		""
+#	shell:
+#		"""
+#		samtools index {params} {input} {output}
+#		"""
 
-rule samtools_crai_merge:
-	input:
-		MAPPED_PAC+"/merge.cram"
-	output:
-		MAPPED_PAC+"/merge.cram.crai"
-	conda:
-		ENVS
-	params:   
-		""
-	shell:
-		"""
-		samtools index {params} {input} {output}
-		"""
+#rule samtools_crai_merge:
+#	input:
+#		MAPPED_PAC+"/merge.cram"
+#	output:
+#		MAPPED_PAC+"/merge.cram.crai"
+#	conda:
+#		ENVS
+#	params:   
+#		""
+#	shell:
+#		"""
+#		samtools index {params} {input} {output}
+#		"""
 
-rule samtools_crai_HiC:
-	input:
-		MAPPED_HiC+"/{SAMPLE}.cram"
-	output:
-		MAPPED_HiC+"/{SAMPLE}.cram.crai"
-	conda:
-		ENVS
-	params:
-		""
-	shell:
-		"""
-		samtools index {params} {input} {output}
-		"""
+#rule samtools_crai_HiC:
+#	input:
+#		MAPPED_HiC+"/{SAMPLE}.cram"
+#	output:
+#		MAPPED_HiC+"/{SAMPLE}.cram.crai"
+#	conda:
+#		ENVS
+#	params:
+#		""
+#	shell:
+#		"""
+#		samtools index {params} {input} {output}
+#		"""
 
-rule bwa_HiC:
-	input:
-		R1 = RAW_HiC+"/{SAMPLE}_R1.fastq.gz",
-		R2 = RAW_HiC+"/{SAMPLE}_R2.fastq.gz",
-		ref = INDEX_HiC+"/Plantago.fasta.gz",
-	output:
-		MAPPED_HiC+"/{SAMPLE}.bam",
-	conda:
-		ENVS
-	shell:
-		"""
-		bwa mem -5SP {input.ref} {input.R1} {input.R2} \
-		| samtools view -S -h -b -F 2316 \
-		| samtools sort \
-		--threads 2 -l 7 \
-		-o {output}
-		"""
+#rule bwa_HiC:
+#	input:
+#		R1 = RAW_HiC+"/{SAMPLE}_R1.fastq.gz",
+#		R2 = RAW_HiC+"/{SAMPLE}_R2.fastq.gz",
+#		ref = INDEX_HiC+"/Plantago.fasta.gz",
+#	output:
+#		MAPPED_HiC+"/{SAMPLE}.bam",
+#	conda:
+#		ENVS
+#	shell:
+#		"""
+#		bwa mem -5SP {input.ref} {input.R1} {input.R2} \
+#		| samtools view -S -h -b -F 2316 \
+#		| samtools sort \
+#		--threads 2 -l 7 \
+#		-o {output}
+#		"""
 
-rule samtools_bai_HiC:
-	input:
-		MAPPED_HiC+"/{SAMPLE}.bam"
-	output:
-		MAPPED_HiC+"/{SAMPLE}.bam.bai"
-	conda:
-		ENVS
-	params:   
-		"" 
-	shell:
- 		"""
-		samtools index {params} {input} {output}
-		"""
+#rule samtools_bai_HiC:
+#	input:
+#		MAPPED_HiC+"/{SAMPLE}.bam"
+#	output:
+#		MAPPED_HiC+"/{SAMPLE}.bam.bai"
+#	conda:
+#		ENVS
+#	params:   
+#		"" 
+#	shell:
+#		"""
+#		samtools index {params} {input} {output}
+#		"""
 
 rule merge:
 	input:
@@ -342,6 +342,7 @@ rule canu:
 	shell:
 		"""
 		canu -p {params.prefix} -d {params.dir} genomeSize=591m \
+		corMhapSensitivity=normal ovsMemory=5g-80g \
 		executiveMemory=1 gridOptionsBAT="--partition=highmem" obtovlThreads=24 cnsMemory=20 cnsThreads=8 -pacbio-raw {input} \
 		onSuccess=touch onFailure={params.retry}
 		"""

@@ -38,20 +38,20 @@ rule all:
 	input:
 		directory(DIR+"/index"),
 		expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		#MULTIQC1+"/multiqc_report.html",
+		MULTIQC1+"/multiqc_report.html",
 		expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
 		expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		#MULTIQC2+"/multiqc_report.html",
+		MULTIQC2+"/multiqc_report.html",
 		expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
 		expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES),
 		expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		#MULTIQC3+"/multiqc_report.html",
-		#MULTIQC4+"/multiqc_report.html",
+		MULTIQC3+"/multiqc_report.html",
+		MULTIQC4+"/multiqc_report.html",
 		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
 		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES),
-		#expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES),
-		#MULTIQC5+"/multiqc_report.html",
-		#MULTIQC6+"/multiqc_report.html",
+		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES),
+		MULTIQC5+"/multiqc_report.html",
+		MULTIQC6+"/multiqc_report.html",
 		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
 		CUFFLINK+"/assemblies.txt",
 
@@ -60,7 +60,7 @@ rule all:
 ################
 rule star_index:
 	input:
-		REFERENCES+"/Plantago.fasta.gz"
+		REFERENCES+"/Plantago.fasta"
 	output:
 		directory(DIR+"/index")
 	conda:
@@ -102,7 +102,7 @@ rule multiqc_raw:
 	output:
 		MULTIQC1+"/multiqc_report.html"
 	conda:
-		ENVS
+		"envs/multiqc.yaml"
 	log:
 		LOGS+"/multiqc_raw/multiqc_report"
 	params:
@@ -160,7 +160,7 @@ rule multiqc_trimmed:
 	output:
 		MULTIQC2+"/multiqc_report.html"
 	conda:
-		ENVS
+		"envs/multiqc.yaml"
 	log:
 		LOGS+"/multiqc_trimmed/multiqc_report"
 	params:
@@ -227,7 +227,7 @@ rule multiqc_clean:
 	output:
 		MULTIQC3+"/multiqc_report.html"
 	conda:
-		ENVS
+		"envs/multiqc.yaml"
 	log:
 		LOGS+"/multiqc_clean_qc/multiqc_report"
 	params:
@@ -245,7 +245,7 @@ rule multiqc_clean_stat:
 	output:
 		MULTIQC4+"/multiqc_report.html"
 	conda:
-		ENVS
+		"envs/multiqc.yaml"
 	log:
 		LOGS+"/multiqc_clean/multiqc_report"
 	params:
@@ -285,10 +285,14 @@ rule star_mapping:
 		--outFileNamePrefix {params.outfile} \
 		--outSAMtype BAM SortedByCoordinate \
 		--alignIntronMax 10000 \
+		--alignMatesGapMax 10000 \
 		--outFilterScoreMinOverLread 0.8 \
 		--outSJfilterCountUniqueMin 5 1 1 1 \
 		--outSJfilterOverhangMin 35 20 20 20 \
+		--outSAMattributes NM XS \
 		--outFilterIntronMotifs RemoveNoncanonical \
+		--outSAMattrIHstart 0 \
+		--alignSoftClipAtReferenceEnds No
 		> {log}
 		"""
 
@@ -326,7 +330,7 @@ rule multiqc_star:
 	output:
 		MULTIQC5+"/multiqc_report.html"
 	conda:
-		ENVS
+		"envs/multiqc.yaml"
 	params:
 		indir = MAPPED ,
 		outdir = MULTIQC5
@@ -343,7 +347,7 @@ rule multiqc_all:
 	output:
 		MULTIQC6+"/multiqc_report.html"
 	conda:
-		ENVS
+		"envs/multiqc.yaml"
 	params:
 		indir1 = QC2 ,
 		indir2 = CLEAN ,
@@ -360,7 +364,7 @@ rule cufflink:
 	output:
 		CUFFLINK+"/{SAMPLE}/transcripts.gtf"
 	conda:
-		ENVS
+		"envs/cufflinks.yaml"
 	log:
 		LOGS+"/cufflink/{SAMPLE}"
 	params:

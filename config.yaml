@@ -140,7 +140,7 @@ NON_CODING: [ "lncRNA", "lncRNA_intergenic", "lncRNA_intronicexonic", "lncRNA_an
 ##########################################################################################
 ## Directories or files that are used in all Snakefiles 
 
-ENVS:            "envs/envs.yaml"
+ENVS:            "envs/default.yaml"
 LOGS:            "logs"
 ADAPTERS:        "all_adapters.fa"
 RRNA:            "database_rrna"

@@ -1,5 +1,5 @@
 cluster:
-  "profiles/slurm/submit -J {cluster.job-name} -t {cluster.time} -p {cluster.partition} -A {cluster.account} -n {cluster.ntasks} -c {cluster.cpus-per-task} -m {cluster.mem} -o {cluster.output} -d '{dependencies}'"
+  "/fast/users/a1697274/snakemake/bioinformatics/profiles/slurm/submit -J {cluster.job-name} -t {cluster.time} -p {cluster.partition} -A {cluster.account} -n {cluster.ntasks} -c {cluster.cpus-per-task} -m {cluster.mem} -o {cluster.output} -d '{dependencies}'"
 cluster-status:
   "status"
 jobscript:
@@ -17,3 +17,5 @@ jobs:
 cluster-config:
  - "cluster-configs/default.yaml"
  - "cluster-configs/phoenix.yaml"
+use-conda:
+  true

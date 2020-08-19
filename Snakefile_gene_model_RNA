@@ -32,9 +32,9 @@ BAM5            = config["BAM7_5"]
 rule all:
 	input:
 		GENE_MODEL+"/gene_model_RNA.gtf",
-		#COUNTS+"/counts.out",
+		COUNTS+"/counts.out",
 		COUNTS+"/counts_2.out",
-		#MULTIQC+"/multiqc_report.html",
+		MULTIQC+"/multiqc_report.html",
 
 ################
 # Rules Proper #
@@ -46,7 +46,7 @@ rule merge_assemblies:
 	output:
 		GENE_MODEL+"/gene_model_RNA.gtf"
 	conda:
-		ENVS
+		"envs/cufflinks.yaml"
 	params: 
 		ref = REFERENCES+"/Plantago.fasta",
 		merged = GENE_MODEL ,
@@ -89,7 +89,7 @@ rule counts_2:
 		COUNTS
 	shell:
 		"""
-		featureCounts -t exon -g gene_id -O -s 2 -p -T 5 -a {input.gtf} -o {output} {input.bam} \
+		featureCounts -Q 10 -t exon -g gene_id -O -s 2 -p -T 5 -a {input.gtf} -o {output} {input.bam} \
 		> {log}
 		"""
 
@@ -103,7 +103,7 @@ rule multiqc_all:
 	output:
 		MULTIQC+"/multiqc_report.html"
 	conda:
-		ENVS
+		"envs/multiqc.yaml"
 	log:
 		LOGS+"/multiqc_report"
 	params:
