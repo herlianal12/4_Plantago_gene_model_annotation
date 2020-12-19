@@ -109,6 +109,4 @@ snakemake --dryrun --snakefile Snakefile_gene_model_compared
 snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_gene_model_compared
 ```
 
-```
 ![Picture 1](https://user-images.githubusercontent.com/57382343/102685534-4f86d800-4231-11eb-8f43-cc7cc62d1f57.png)
-```
