@@ -1,4 +1,4 @@
-# Genome Assembly and RNAseq Analysis Workflows in Plantago ovata
+# Gene model and functional annotation workflows for Plantago ovata
 
 This repository is aimed to document, develop, and test pipelines for genome assembly and RNAseq analysis. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtained in this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
 
