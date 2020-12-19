@@ -9,6 +9,22 @@ All softwares or modules to execute Snakefiles are listed in envs/envs.yaml, whi
 RNAseq data were collected from Burton Lab, The University of Adelaide and public data in Sequence Read Archive (SRA) NCBI website. All detail information can be seen in Plantago data summary.xlsx (https://universityofadelaide.box.com/shared/static/b9ik8rg9z5u5wttlaiq30kq1xck2kssb.xlsx).
 
 
+## Overall workflow for generating gene model
+
+1.	Quality control (fastqc and multiqc)
+2.	Trimming reads (trimmomatic)
+3.	Cleaning reads (bbmap)
+4.	Aligning reads (star)
+5.	Generating transcripts (cufflink)
+6.	Merging transcripts to generate gene model (cufflink)
+7.	Evaluating gene model using IGV
+
+![Picture 1](https://user-images.githubusercontent.com/57382343/102685534-4f86d800-4231-11eb-8f43-cc7cc62d1f57.png)
+
+## Overall workflow for generating gene annotation
+
+![Picture 2](https://user-images.githubusercontent.com/57382343/102685569-aee4e800-4231-11eb-8d10-a161b88540e7.png)
+
 ## Setup Required Input Data
 
 We don't want to store massive files in git repositories, so here are instructions on where to obtain the input files required for running the Snakemake workflows.
@@ -109,5 +125,3 @@ snakemake --dryrun --snakefile Snakefile_gene_model_compared
 snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_gene_model_compared
 ```
 
-![Picture 1](https://user-images.githubusercontent.com/57382343/102685534-4f86d800-4231-11eb-8f43-cc7cc62d1f57.png)
-![Picture 2](https://user-images.githubusercontent.com/57382343/102685569-aee4e800-4231-11eb-8d10-a161b88540e7.png)
