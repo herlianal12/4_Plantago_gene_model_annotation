@@ -6,8 +6,6 @@ There are 8 Snakefiles. Snakefile_paired_stranded_illumina_1, Snakefile_paired_s
 
 All tools or modules to execute Snakefiles are stored in folder envs, while config.yaml stores information about sample names, file and directory paths that can be accessed by Snakefiles.
 
-RNAseq data were collected from Burton Lab, The University of Adelaide and public data in Sequence Read Archive (SRA) NCBI website.
-
 
 ## Overall workflow for generating gene model
 
