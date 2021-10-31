@@ -1,8 +1,3 @@
-# A global singularity image to be used for all jobs - need to specify --use-singularity and have singularity available on the command line
-# This image already contains the bioinformatic tools we will be using singularity:
-#"file:///shared/.singularity/nextflow-embl-abr-webinar.simg", 
-"docker://rsuchecki/nextflow-embl-abr-webinar"
-
 configfile: "config.yaml"
 
 SAMPLES1        = config["SAMPLES1"]
@@ -14,8 +9,7 @@ ENVS            = config["ENVS"]
 REFERENCES	= config["REFERENCES"]
 LOGS            = config["LOGS"]
 DIR             = config["DIR7"]
-GENE_MODEL      = config["GENE_MODEL7"]      
-COUNTS          = config["COUNTS7"]
+GENE_MODEL      = config["GENE_MODEL7"]
 MULTIQC         = config["MULTIQC7"]
 BAM1            = config["BAM7_1"]
 BAM2            = config["BAM7_2"]
@@ -32,8 +26,6 @@ BAM5            = config["BAM7_5"]
 rule all:
 	input:
 		GENE_MODEL+"/gene_model_RNA.gtf",
-		COUNTS+"/counts.out",
-		COUNTS+"/counts_2.out",
 		MULTIQC+"/multiqc_report.html",
 
 ################
@@ -48,49 +40,12 @@ rule merge_assemblies:
 	conda:
 		"envs/cufflinks.yaml"
 	params: 
-		ref = REFERENCES+"/Plantago.fasta",
-		merged = GENE_MODEL ,
-		output = GENE_MODEL+"/merged.gtf" 
+		genome = REFERENCES+"/Plantago_ovata_ncbi.fasta",
+		output = "gffcmp.combined.gtf"
 	shell:
 		"""
-		cuffmerge -p 5 -o {params.merged} -s {params.ref} {input} &&
+		gffcompare -D -s {params.genome} -i {input} &&
 		mv {params.output} {output}
-		"""
-
-rule counts:
-	input:
-		bam = expand(BAM1+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES1),
-		gtf = GENE_MODEL+"/gene_model_RNA.gtf",
-	output:
-		COUNTS+"/counts.out",
-	conda:
-		ENVS
-	log:
-		LOGS+"/counts.summary"
-	params:
-		COUNTS
-	shell:
-		"""
-		featureCounts -t exon -g gene_id -f -O -s 2 -p -T 5 -a {input.gtf} -o {output} {input.bam} \
-		> {log}
-		"""
-
-rule counts_2:
-	input:
-		bam = expand(BAM1+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES1),
-		gtf = GENE_MODEL+"/gene_model_RNA.gtf",
-	output:
-		COUNTS+"/counts_2.out",
-	conda:
-		ENVS
-	log:
-		LOGS+"/counts_2.summary"
-	params:
-		COUNTS
-	shell:
-		"""
-		featureCounts -Q 10 -t exon -g gene_id -O -s 2 -p -T 5 -a {input.gtf} -o {output} {input.bam} \
-		> {log}
 		"""
 
 rule multiqc_all:
