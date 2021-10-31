@@ -67,7 +67,7 @@ Several ways to download SRA:
 5.	Using this script (https://github.com/UofABioinformaticsHub/nathan_sysadmin_scripts/blob/master/general_script/sra_downloader.sh)
 Copy the script then use nano to create file SRA_Nathan, making the script executable chmod tx SRA_Nathan, inside the directory where we save the script, run it by typing ./SRA_Nathan –a SRR10076762 –o SRR10076762 
 
-# Extracting SRR files to obtain fastq files
+# Extract fastq files from downloaded SRR files
 
 an example:
 
