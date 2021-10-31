@@ -67,7 +67,11 @@ Several ways to download SRA:
 5.	Using this script (https://github.com/UofABioinformaticsHub/nathan_sysadmin_scripts/blob/master/general_script/sra_downloader.sh)
 Copy the script then use nano to create file SRA_Nathan, making the script executable chmod tx SRA_Nathan, inside the directory where we save the script, run it by typing ./SRA_Nathan –a SRR10076762 –o SRR10076762 
 
-Before we are able to use the data, we need to extract raw reads in fastq format from the SRA. 
+# Extracting SRR files to obtain fastq files
+
+an example:
+
+./fastq-dump --skip-technical --split-3 --origfmt  --gzip SRRXXX
 
 # How to upload raw data to SRA NCBI
 
