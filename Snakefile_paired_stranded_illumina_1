@@ -58,7 +58,7 @@ rule fastqc_raw:
 		zip = QC1+"/{SAMPLE}_fastqc.zip",
 		html = QC1+"/{SAMPLE}_fastqc.html"
 	conda:
-		ENVS
+		"envs/fastqc.yaml"
 	log:
 		LOGS+"/fastqc_raw/{SAMPLE}"
 	params:
