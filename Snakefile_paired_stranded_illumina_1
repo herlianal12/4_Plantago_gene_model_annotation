@@ -1,7 +1,13 @@
+# A global singularity image to be used for all jobs - need to specify --use-singularity and have singularity available on the command line
+# This image already contains the bioinformatic tools we will be using singularity:
+#"file:///shared/.singularity/nextflow-embl-abr-webinar.simg",
+"docker://rsuchecki/nextflow-embl-abr-webinar"
+
 configfile: "config.yaml"
 
 SAMPLES         = config["SAMPLES"]
 READS           = config["READS1"]
+ENVS            = config["ENVS"]
 REFERENCES      = config["REFERENCES"]
 LOGS            = config["LOGS"]
 ADAPTERS        = config["ADAPTERS"]
@@ -30,23 +36,23 @@ MERGED          = config["MERGED2"]
 # the list of ALL the files you want the workflow to create. e.g.:
 rule all:
 	input:
-		expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC1+"/multiqc_report.html",
-		expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC2+"/multiqc_report.html",
-		expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES),
-		expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		MULTIQC3+"/multiqc_report.html",
-		MULTIQC4+"/multiqc_report.html",
+		#expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		#MULTIQC1+"/multiqc_report.html",
+		#expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		#expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		#MULTIQC2+"/multiqc_report.html",
+		#expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		#expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES),
+		#expand(QC3+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		#MULTIQC3+"/multiqc_report.html",
+		#MULTIQC4+"/multiqc_report.html",
 		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
 		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES),
 		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES),
 		MULTIQC5+"/multiqc_report.html",
-		MULTIQC6+"/multiqc_report.html",
-		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
-		CUFFLINK+"/assemblies.txt",
+		#MULTIQC6+"/multiqc_report.html",
+		#expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
+		#CUFFLINK+"/assemblies.txt",
 
 ################
 # Rules Proper #
@@ -149,16 +155,18 @@ rule bbmap:
 	input:
 		file1 = TRIMMED+"/{SAMPLES}_R1_001.fastq.gz",
 		file2 = TRIMMED+"/{SAMPLES}_R2_001.fastq.gz",
-		ref1 = RRNA+"/SILVA_128_LSURef_tax_silva.fasta",
-		ref2 = RRNA+"/SILVA_138_SSURef_NR99_tax_silva.fasta",
-		ref3 = RRNA+"/SILVA_138_SSURef_tax_silva.fasta",
-		ref4 = REFERENCES+"/plantago_chloroplast.fasta",
-		ref5 = REFERENCES+"/plantago_mitocondria.fasta",
-		ref6 = RRNA+"/Archaea.fasta",
-		ref7 = RRNA+"/Bacteria.fasta",
-		ref8 = RRNA+"/Mitochondria.fasta",
-		ref9 = RRNA+"/Plastids.fasta",
-		ref10 = RRNA+"/Eukaryota.fasta",
+		ref1 = RRNA+"/SILVA_128_LSURef_tax_silva.fasta.gz",
+		ref2 = RRNA+"/SILVA_138_SSURef_NR99_tax_silva.fasta.gz",
+		ref3 = RRNA+"/SILVA_138_SSURef_tax_silva.fasta.gz",
+		ref4 = REFERENCES+"/plantago_chloroplast.fasta.gz",
+		ref5 = REFERENCES+"/plantago_mitocondria.fasta.gz",
+		#ref6 = REFERENCES+"/NC_041421.1.fasta.gz",
+		ref7 = RRNA+"/Archaea.fasta.gz",
+		ref8 = RRNA+"/Bacteria.fasta.gz",
+		ref9 = RRNA+"/Mitochondria.fasta.gz",
+		ref10 = RRNA+"/Plastids.fasta.gz",
+		ref11 = RRNA+"/Eukaryota.fasta.gz",
+		#ref12 = REFERENCES+"/MH165324.fasta.gz"
 	output:
 		clean1 = CLEAN+"/{SAMPLES}_R1_001.fastq.gz",
 		clean2 = CLEAN+"/{SAMPLES}_R2_001.fastq.gz",
@@ -175,7 +183,7 @@ rule bbmap:
 		in2={input.file2} out1={output.clean1} \
 		out2={output.clean2} outm1={output.conta1} \
 		outm2={output.conta2} stats={output.statistic} \
-		ref={input.ref1},{input.ref2},{input.ref3},{input.ref4},{input.ref5},{input.ref6},{input.ref7},{input.ref8},{input.ref9},{input.ref10}
+		ref={input.ref1},{input.ref2},{input.ref3},{input.ref4},{input.ref5},{input.ref7},{input.ref8},{input.ref9},{input.ref10},{input.ref11}
 		"""
 
 rule fastqc_clean:
@@ -236,7 +244,7 @@ rule star_mapping:
 	input:
 		file1 = CLEAN+"/{SAMPLES}_R1_001.fastq.gz",
 		file2 = CLEAN+"/{SAMPLES}_R2_001.fastq.gz",
-		index = directory(DIR+"/STAR"),
+		index = directory(REFERENCES+"/STAR"),
 	output:
 		out1 = MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
 		out2 = MAPPED+"/{SAMPLES}Log.final.out",
