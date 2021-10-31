@@ -137,7 +137,7 @@ gunzip gene_model_protein/annotation/uniprot/uniprot_sprot.pep.gz
 STAR \
   --runMode genomeGenerate \
   --runThreadN 2 \
-  --genomeDir Plantago_ovata_ncbi \
+  --genomeDir references/STAR \
   --genomeSAindexNbases 12 \
   --genomeFastaFiles Plantago_ovata_ncbi.fasta
 
