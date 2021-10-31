@@ -132,30 +132,6 @@ READS1: ["R1_001", "R2_001"]
 READS2: "R1"
 
 
-## List of non coding group
-
-
-NON_CODING_FASTA: ["candidate_ncRNA", "candidate_ncRNA_inter_anti",
-"candidate_ncRNA_intergenic", "candidate_ncRNA_intronicexonic", "candidate_ncRNA_antisense"]
-
-NON_CODING: [ "lncRNA", "lncRNA_intergenic", "lncRNA_intronicexonic", "lncRNA_antisense",
-"sncRNA", "sncRNA_intergenic", "sncRNA_intronicexonic", "sncRNA_antisense", "candidate_ncRNA", "candidate_ncRNA_inter_anti",
-"candidate_ncRNA_intergenic", "candidate_ncRNA_intronicexonic", "candidate_ncRNA_antisense"]
-
-
-SAMPLES_NON_CODING: ["lncRNA", "miR_mature", "miR_stem_loop", "snoRNA", "snRNA", "tasiRNA", "tRNA"]
-
-
-SAMPLES_CATATA: ["Amborella_trichopoda", "Galdieria_sulphuraria", "Oryza_sativa_Japonica_Group", "Ananas_comosus", "Glycine_max", "Physcomitrella_patens",
-"Arabidopsis_lyrata", "Hordeum_vulgare", "Populus_trichocarpa", "Arabidopsis_thaliana", "Leersia_perrieri", "Prunus_persica",
-"Brachypodium_distachyon", "Malus_domestica", "Selaginella_moellendorffii",
-"Brassica_napus", "Manihot_esculenta", "Setaria_italica", "Brassica_oleracea", "Medicago_truncatula", "Solanum_lycopersicum",
-"Brassica_rapa", "Musa_acuminata", "Solanum_tuberosum", "Chenopodium_quinoa", "Oryza_barthii", "Sorghum_bicolor",
-"Chlamydomonas_reinhardtii", "Oryza_brachyantha", "Theobroma_cacao", "Chondrus_crispus", "Oryza_nivara", "Trifolium_pratense",
-"Corchorus_capsularis", "Oryza_punctata", "Vitis_vinifera", "Cucumis_sativus", "Oryza_rufipogon", "Zea_mays"]
-
-
-
 
 ##########################################################################################
 ## Directories or files that are used in all Snakefiles 
@@ -326,10 +302,4 @@ ANNOTATION8:      "gene_model_protein/annotation"
 COUNTS8:          "gene_model_protein/counts"
 BAM8_1:           "paired_stranded_illumina_1/mapped_reads"
 
-#########################################################################################
-## Directories for comparing gene models
-
-GENE_MODEL9:      "non_coding_RNA"
-COUNTS9:          "gene_model_compared/counts"
-BAM9_1:           "paired_stranded_illumina_1/mapped_reads"
 
