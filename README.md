@@ -52,25 +52,22 @@ mkdir -p gene_model_compared/gene_model/rnacentral
 
 # Get raw data
 
-bash paired_stranded_illumina_1.sh
-bash paired_stranded_illumina_2.sh
-bash single_stranded_illumina.sh
-bash single_unstranded_illumina.sh
-bash single_unstranded_454.sh
-bash paired_unstranded_illumina.sh
+SRA:SRR14643399; SRA:SRR14643400; SRA:SRR14643401; SRA:SRR14643402; SRA:SRR14643403; SRA:SRR14643404; SRA:SRR14643405; SRA:SRR14643406; SRA:SRR14643407; SRA:SRR14643408; SRA:SRR14643409; SRA:SRR14643410; SRA:SRR14643411; SRA:SRR14643412; SRA:SRR14643413; SRA:SRR14643414; SRA:SRR14643415; SRA:SRR14643416; SRA:SRR14643417; SRA:SRR14643418; SRA:SRR14643419; SRA:SRR14643420; SRA:SRR14643421; SRA:SRR14643422; SRA:SRR14643423; SRA:SRR14643424; SRA:SRR14643425; SRA:SRR14643426; SRA:SRR14643427; SRA:SRR14643428; SRA:SRR14643429; SRA:SRR14643430; SRA:SRR14643431; SRA:SRR14643432; SRA:SRR14643433; SRA:SRR14643434; SRA:SRR14643435; SRA:SRR14643436
+SRA:SRR06637; SRA:SRR066374; SRA:SRR066375; SRA:SRR066376; SRA:SRR342350; SRA:SRR342351; SRA:SRR629688; SRA:SRR1311174; SRA:SRR1311175; SRA:SRR1311176; SRA:SRR1311177; SRA:SRR3883622 SRA:SRR3883620; SRA:SRR3883621; SRA:SRR3883618; SRA:SRR3883619; SRA:SRR3885726; SRA:SRR3885727; SRA:SRR3885728; SRA:SRR5434206; SRA:SRR5434207; SRA:SRR5434208; SRA:SRR5434209; SRA:SRR5434211; SRA:SRR5434210; SRA:SRR5434213; SRA:SRR5434212
+
 
 ```
 
 ```bash
 
 # Get *Plantago* mitocondria gene and chloroplast genome sequences (originally downloaded from NCBI website)
-bash mito_chlro_genome.sh
+bash datasets/mito_chlro_genome.sh
 
 # Get rRNA sequences
-bash rRNA_sequences.sh
+bash datasets/rRNA_sequences.sh
 
 # Get a list of transcript paths from different RNAseq groups
-bash assemblies.sh
+bash datasets/assemblies.sh
 
 # Get uniprot and pfam databases and trinotate template
 
@@ -80,7 +77,7 @@ Build_Trinotate_Boilerplate_SQLite_db.pl  Trinotate # may not be working as they
 
 ## Or you can download directly from the website
 
-bash trinotate.sh
+bash datasets/trinotate.sh
 
 ```
 
