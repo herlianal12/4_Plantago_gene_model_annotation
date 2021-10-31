@@ -64,8 +64,8 @@ Several ways to download SRA:
 2.	Downloading from terminal using curl or wget
 3.	Downloading from terminal using SRA toolkits (https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software)
 4.	Downloading with the help ascp-path (download Aspera connect)
-5.	Using Nathan's script (https://github.com/UofABioinformaticsHub/nathan_sysadmin_scripts/blob/master/general_script/sra_downloader.sh)
-Copy Nathan’s script then use nano to create file SRA_Nathan, making the script executable chmod tx SRA_Nathan, inside the directory where we save the script, run it by typing ./SRA_Nathan –a SRR10076762 –o SRR10076762 
+5.	Using this script (https://github.com/UofABioinformaticsHub/nathan_sysadmin_scripts/blob/master/general_script/sra_downloader.sh)
+Copy the script then use nano to create file SRA_Nathan, making the script executable chmod tx SRA_Nathan, inside the directory where we save the script, run it by typing ./SRA_Nathan –a SRR10076762 –o SRR10076762 
 
 Before we are able to use the data, we need to extract raw reads in fastq format from the SRA. 
 
