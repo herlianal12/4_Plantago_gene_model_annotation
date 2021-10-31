@@ -78,8 +78,8 @@ Follow this guideline from NCBI (https://submit.ncbi.nlm.nih.gov/about/sra/)
 
 ```bash
 
-# Get *Plantago* mitochondrial gene and chloroplast genome sequences
-*Plantago* chloroplast genome can be found at https://www.ncbi.nlm.nih.gov/nuccore/MH205737.1/ and a mitochondrial gene is in here https://www.ncbi.nlm.nih.gov/nuccore/EU069524.1/.
+# Get Plantago mitochondrial gene and chloroplast genome sequences
+Plantago chloroplast genome can be found at https://www.ncbi.nlm.nih.gov/nuccore/MH205737.1/ and a mitochondrial gene is in here https://www.ncbi.nlm.nih.gov/nuccore/EU069524.1/.
 
 # Get rRNA sequences
 
@@ -131,6 +131,15 @@ gunzip gene_model_protein/annotation/pfam/Pfam-A.hmm.gz
 wget "https://data.broadinstitute.org/Trinity/Trinotate_v3_RESOURCES/uniprot_sprot.pep.gz" \
 -O gene_model_protein/annotation/uniprot/uniprot_sprot.pep.gz &&
 gunzip gene_model_protein/annotation/uniprot/uniprot_sprot.pep.gz
+
+## STAR index
+
+STAR \
+  --runMode genomeGenerate \
+  --runThreadN 2 \
+  --genomeDir Plantago_ovata_ncbi \
+  --genomeSAindexNbases 12 \
+  --genomeFastaFiles Plantago_ovata_ncbi.fasta
 
 ```
 
