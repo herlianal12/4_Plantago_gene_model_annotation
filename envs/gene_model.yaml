@@ -1,0 +1,16 @@
+channels:
+ - bioconda
+ - conda-forge
+ - defaults
+dependencies:
+ - trinity=2.11.0
+ - blast=2.10.1
+ - hmmer=3.3.1
+ - transdecoder=5.5.0
+ - pfam_scan=1.6
+ - uniprot=1.3
+ - trinotate=3.2.1
+ - sqlite=3.33.0
+ - bedtools=2.29.2
+ - hmmer2=2.3.2
+

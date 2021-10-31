@@ -3,5 +3,6 @@ channels:
  - conda-forge
  - defaults
 dependencies:
- - cufflinks=2.2.1
- - gffcompare=0.11.2
+ - fastqc=0.11.9
+ - bbmap=38.79
+
