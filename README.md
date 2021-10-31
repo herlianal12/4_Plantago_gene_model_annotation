@@ -52,10 +52,27 @@ mkdir -p gene_model_compared/gene_model/rnacentral
 
 # Get raw data
 
+Publicly available datasets:
 SRA:SRR14643399; SRA:SRR14643400; SRA:SRR14643401; SRA:SRR14643402; SRA:SRR14643403; SRA:SRR14643404; SRA:SRR14643405; SRA:SRR14643406; SRA:SRR14643407; SRA:SRR14643408; SRA:SRR14643409; SRA:SRR14643410; SRA:SRR14643411; SRA:SRR14643412; SRA:SRR14643413; SRA:SRR14643414; SRA:SRR14643415; SRA:SRR14643416; SRA:SRR14643417; SRA:SRR14643418; SRA:SRR14643419; SRA:SRR14643420; SRA:SRR14643421; SRA:SRR14643422; SRA:SRR14643423; SRA:SRR14643424; SRA:SRR14643425; SRA:SRR14643426; SRA:SRR14643427; SRA:SRR14643428; SRA:SRR14643429; SRA:SRR14643430; SRA:SRR14643431; SRA:SRR14643432; SRA:SRR14643433; SRA:SRR14643434; SRA:SRR14643435; SRA:SRR14643436
+
+Data generated from this study (link) and uploaded to SRA NCBI
 SRA:SRR06637; SRA:SRR066374; SRA:SRR066375; SRA:SRR066376; SRA:SRR342350; SRA:SRR342351; SRA:SRR629688; SRA:SRR1311174; SRA:SRR1311175; SRA:SRR1311176; SRA:SRR1311177; SRA:SRR3883622 SRA:SRR3883620; SRA:SRR3883621; SRA:SRR3883618; SRA:SRR3883619; SRA:SRR3885726; SRA:SRR3885727; SRA:SRR3885728; SRA:SRR5434206; SRA:SRR5434207; SRA:SRR5434208; SRA:SRR5434209; SRA:SRR5434211; SRA:SRR5434210; SRA:SRR5434213; SRA:SRR5434212
 
 
+# RNAseq data mining
+Several ways to download SRA:
+1.	Downloading from the website (https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=search_seq_name)
+2.	Downloading from terminal using curl or wget
+3.	Downloading from terminal using SRA toolkits (https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=software)
+4.	Downloading with the help ascp-path (download Aspera connect)
+5.	Using Nathan's script : https://github.com/UofABioinformaticsHub/nathan_sysadmin_scripts/blob/master/general_script/sra_downloader.sh. Copy Nathan’s script then use nano to create file SRA_Nathan, making the script executable : chmod tx SRA_Nathan, inside the directory where we save the script, run it by typing:
+Example: ./SRA_Nathan –a SRR10076762 –o SRR10076762 
+
+Before we are able to use the data, we need to extract raw reads in fastq format from the SRA. 
+
+# How to upload raw data to SRA NCBI
+
+Follow this guideline from NCBI https://submit.ncbi.nlm.nih.gov/about/sra/
 ```
 
 ```bash
