@@ -1,10 +1,10 @@
 # Gene model and functional annotation workflows for *Plantago ovata*
 
-This repository is aimed to document, develop, and test pipelines for generating gene model and annotation for *Plantago ovata*. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtained in this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
+This repository is aimed to document, develop, and test pipelines for generating gene models and annotation for *Plantago ovata*. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtained on this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
 
 There are 8 Snakefiles. Snakefile_paired_stranded_illumina_1, Snakefile_paired_stranded_illumina_2, Snakefile_single_stranded_illumina, Snakefile_single_unstranded_illumina, Snakefile_single_unstranded_454 and Snakefile_paired_unstranded_illumina are rules for generating transcript from 6 different groups of RNAseq data. These six Snakefiles need to be executed first before running Snakefile_gene_model_RNA and Snakefile_gene_model_protein.
 
-All softwares or modules to execute Snakefiles are stored in folder envs, while config.yaml stores information about sample names, file and directory paths that can be accessed by Snakefiles.
+All tools or modules to execute Snakefiles are stored in folder envs, while config.yaml stores information about sample names, file and directory paths that can be accessed by Snakefiles.
 
 RNAseq data were collected from Burton Lab, The University of Adelaide and public data in Sequence Read Archive (SRA) NCBI website.
 
@@ -27,7 +27,7 @@ RNAseq data were collected from Burton Lab, The University of Adelaide and publi
 
 ## Setup Required Input Data
 
-We don't want to store massive files in git repositories, so here are instructions on where to obtain the input files required for running the Snakemake workflows.
+We do not want to store massive files in git repositories, so here are instructions on obtaining the input files required for running the Snakemake workflows.
 
 ```bash 
 
@@ -55,7 +55,7 @@ mkdir -p gene_model_compared/gene_model/rnacentral
 Publicly available datasets:
 SRA:SRR14643399; SRA:SRR14643400; SRA:SRR14643401; SRA:SRR14643402; SRA:SRR14643403; SRA:SRR14643404; SRA:SRR14643405; SRA:SRR14643406; SRA:SRR14643407; SRA:SRR14643408; SRA:SRR14643409; SRA:SRR14643410; SRA:SRR14643411; SRA:SRR14643412; SRA:SRR14643413; SRA:SRR14643414; SRA:SRR14643415; SRA:SRR14643416; SRA:SRR14643417; SRA:SRR14643418; SRA:SRR14643419; SRA:SRR14643420; SRA:SRR14643421; SRA:SRR14643422; SRA:SRR14643423; SRA:SRR14643424; SRA:SRR14643425; SRA:SRR14643426; SRA:SRR14643427; SRA:SRR14643428; SRA:SRR14643429; SRA:SRR14643430; SRA:SRR14643431; SRA:SRR14643432; SRA:SRR14643433; SRA:SRR14643434; SRA:SRR14643435; SRA:SRR14643436
 
-Data generated from this study (link) and uploaded to SRA NCBI
+Data generated from this study (link) and uploaded to SRA NCBI:
 SRA:SRR06637; SRA:SRR066374; SRA:SRR066375; SRA:SRR066376; SRA:SRR342350; SRA:SRR342351; SRA:SRR629688; SRA:SRR1311174; SRA:SRR1311175; SRA:SRR1311176; SRA:SRR1311177; SRA:SRR3883622 SRA:SRR3883620; SRA:SRR3883621; SRA:SRR3883618; SRA:SRR3883619; SRA:SRR3885726; SRA:SRR3885727; SRA:SRR3885728; SRA:SRR5434206; SRA:SRR5434207; SRA:SRR5434208; SRA:SRR5434209; SRA:SRR5434211; SRA:SRR5434210; SRA:SRR5434213; SRA:SRR5434212
 
 # RNAseq data mining
@@ -80,8 +80,8 @@ Follow this guideline from NCBI (https://submit.ncbi.nlm.nih.gov/about/sra/)
 
 ```bash
 
-# Get *Plantago* mitocondria gene and chloroplast genome sequences (originally downloaded from NCBI website)
-bash datasets/mito_chlro_genome.sh
+# Get *Plantago* mitochondrial gene and chloroplast genome sequences
+*Plantago* chloroplast genome can be found at https://www.ncbi.nlm.nih.gov/nuccore/MH205737.1/ and a mitochondrial gene is in here https://www.ncbi.nlm.nih.gov/nuccore/EU069524.1/.
 
 # Get rRNA sequences
 
@@ -114,10 +114,7 @@ wget "http://combio.pl/rrna/static/download/Eukaryota.fasta" \
 -O database_rrna/Eukaryota.fasta
 
 
-# Get a list of transcript paths from different RNAseq groups
-bash datasets/assemblies.sh
-
-# Get uniprot and pfam databases and trinotate template
+# Get Uniprot and Pfam databases and trinotate template
 
 ## If you have installed Trinotate software, you can run this script below:
 
@@ -146,7 +143,7 @@ gunzip gene_model_protein/annotation/uniprot/uniprot_sprot.pep.gz
 conda activate snakemake
 module load Anaconda3 Singularity
 
-## Run these workflows in order and use dryrun mode first to detect any problem related to snakemake rules
+## Run these workflows in order and use dry-run mode first to detect any problem related to snakemake rules
 
 ### 1st workflow 
 snakemake --dry-run --snakefile Snakefile_paired_stranded_illumina_1
