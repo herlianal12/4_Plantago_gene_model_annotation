@@ -2,11 +2,11 @@
 
 This repository is aimed to document, develop, and test pipelines for generating gene model and annotation for Plantago ovata. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtained in this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
 
-There are 9 Snakefiles. Snakefile_paired_stranded_illumina_1, Snakefile_paired_stranded_illumina_2, Snakefile_single_stranded_illumina, Snakefile_single_unstranded_illumina, Snakefile_single_unstranded_454 and Snakefile_paired_unstranded_illumina are rules for generating transcript from 6 different groups of RNAseq data. These six Snakefiles need to be executed first before running Snakefile_gene_model_RNA and Snakefile_gene_model_protein. Since there are differences between two gene models, Snakefile_gene_model_compared are created to get information about non coding RNA.
+There are 9 Snakefiles. Snakefile_paired_stranded_illumina_1, Snakefile_paired_stranded_illumina_2, Snakefile_single_stranded_illumina, Snakefile_single_unstranded_illumina, Snakefile_single_unstranded_454 and Snakefile_paired_unstranded_illumina are rules for generating transcript from 6 different groups of RNAseq data. These six Snakefiles need to be executed first before running Snakefile_gene_model_RNA and Snakefile_gene_model_protein.
 
-All softwares or modules to execute Snakefiles are listed in envs/envs.yaml, while config.yaml stores information about sample names, file and directory paths that can be accessed by Snakefiles.
+All softwares or modules to execute Snakefiles are stored in folder envs, while config.yaml stores information about sample names, file and directory paths that can be accessed by Snakefiles.
 
-RNAseq data were collected from Burton Lab, The University of Adelaide and public data in Sequence Read Archive (SRA) NCBI website. All detail information can be seen in Plantago data summary.xlsx (https://universityofadelaide.box.com/shared/static/b9ik8rg9z5u5wttlaiq30kq1xck2kssb.xlsx).
+RNAseq data were collected from Burton Lab, The University of Adelaide and public data in Sequence Read Archive (SRA) NCBI website.
 
 
 ## Overall workflow for generating gene model
@@ -120,8 +120,5 @@ snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_gene_
 snakemake --dryrun --snakefile Snakefile_gene_model_protein
 snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_gene_model_protein
 
-### 4th workflow
-snakemake --dryrun --snakefile Snakefile_gene_model_compared
-snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_gene_model_compared
 ```
 
