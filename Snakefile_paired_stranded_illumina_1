@@ -1,13 +1,7 @@
-# A global singularity image to be used for all jobs - need to specify --use-singularity and have singularity available on the command line
-# This image already contains the bioinformatic tools we will be using singularity:
-#"file:///shared/.singularity/nextflow-embl-abr-webinar.simg",
-"docker://rsuchecki/nextflow-embl-abr-webinar"
-
 configfile: "config.yaml"
 
 SAMPLES         = config["SAMPLES"]
 READS           = config["READS1"]
-ENVS            = config["ENVS"]
 REFERENCES      = config["REFERENCES"]
 LOGS            = config["LOGS"]
 ADAPTERS        = config["ADAPTERS"]
@@ -36,7 +30,6 @@ MERGED          = config["MERGED2"]
 # the list of ALL the files you want the workflow to create. e.g.:
 rule all:
 	input:
-		directory(DIR+"/index"),
 		expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
 		MULTIQC1+"/multiqc_report.html",
 		expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
@@ -52,33 +45,12 @@ rule all:
 		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.sorted.bam", SAMPLE=SAMPLES),
 		MULTIQC5+"/multiqc_report.html",
 		MULTIQC6+"/multiqc_report.html",
-		#expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
-		#CUFFLINK+"/assemblies.txt",
-		#CUFFLINK+"/merged.gtf"
+		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
+		CUFFLINK+"/assemblies.txt",
 
 ################
 # Rules Proper #
 ################
-rule star_index:
-	input:
-		REFERENCES+"/Plantago.fasta"
-	output:
-		directory(DIR+"/index")
-	conda:
-		ENVS
-	log:
-		LOGS+"/star_index"
-	shell:
-		"""
-		mkdir {output} &&
-		STAR --runThreadN 8 \
-		--runMode genomeGenerate \
-		--genomeDir {output} \
-		--genomeSAindexNbases 12 \
-		--genomeFastaFiles {input}
-		2> {log}
-		"""
-
 rule fastqc_raw:
 	input:
 		RAW+"/{SAMPLE}.fastq.gz"
@@ -126,7 +98,7 @@ rule trimmomatic:
 		r2 = TRIMMED+"/{SAMPLES}_R2_001.fastq.gz",
 		r2_unpaired = TRIMMED+"/{SAMPLES}_R2_001.unpaired.fastq.gz"
 	conda:
-		ENVS
+		"envs/trimmomatic.yaml"
 	log:
 		r1 = LOGS+"/trimmomatic/{SAMPLES}_R1_001",
 		r2 = LOGS+"/trimmomatic/{SAMPLES}_R1_001.unpaired",
@@ -144,7 +116,7 @@ rule fastqc_trimmed:
 		zip = QC2+"/{SAMPLE}_fastqc.zip",
 		html = QC2+"/{SAMPLE}_fastqc.html"
 	conda:
-		ENVS
+		"envs/fastqc.yaml"
 	log:
 		LOGS+"/fastqc_trimmed/{SAMPLE}"
 	params:
@@ -182,13 +154,11 @@ rule bbmap:
 		ref3 = RRNA+"/SILVA_138_SSURef_tax_silva.fasta",
 		ref4 = REFERENCES+"/plantago_chloroplast.fasta",
 		ref5 = REFERENCES+"/plantago_mitocondria.fasta",
-		ref6 = REFERENCES+"/NC_041421.1.fasta",
-		ref7 = RRNA+"/Archaea.fasta",
-		ref8 = RRNA+"/Bacteria.fasta",
-		ref9 = RRNA+"/Mitochondria.fasta",
-		ref10 = RRNA+"/Plastids.fasta",
-		ref11 = RRNA+"/Eukaryota.fasta",
-		ref12 = REFERENCES+"/MH165324.fasta"
+		ref6 = RRNA+"/Archaea.fasta",
+		ref7 = RRNA+"/Bacteria.fasta",
+		ref8 = RRNA+"/Mitochondria.fasta",
+		ref9 = RRNA+"/Plastids.fasta",
+		ref10 = RRNA+"/Eukaryota.fasta",
 	output:
 		clean1 = CLEAN+"/{SAMPLES}_R1_001.fastq.gz",
 		clean2 = CLEAN+"/{SAMPLES}_R2_001.fastq.gz",
@@ -196,7 +166,7 @@ rule bbmap:
 		conta2 = CLEAN+"/conta/{SAMPLES}_R2_001.fastq.gz",
 		statistic = CLEAN+"/{SAMPLES}_stat"
 	conda:
-		ENVS
+		"envs/bbmap.yaml"
 	log:
 		LOGS+"/bbmap/{SAMPLES}.bbduk.log"
 	shell:
@@ -205,7 +175,7 @@ rule bbmap:
 		in2={input.file2} out1={output.clean1} \
 		out2={output.clean2} outm1={output.conta1} \
 		outm2={output.conta2} stats={output.statistic} \
-		ref={input.ref1},{input.ref2},{input.ref3},{input.ref4},{input.ref5},{input.ref6},{input.ref7},{input.ref8},{input.ref9},{input.ref10},{input.ref11},{input.ref12}
+		ref={input.ref1},{input.ref2},{input.ref3},{input.ref4},{input.ref5},{input.ref6},{input.ref7},{input.ref8},{input.ref9},{input.ref10}
 		"""
 
 rule fastqc_clean:
@@ -215,7 +185,7 @@ rule fastqc_clean:
 		zip = QC3+"/{SAMPLE}_fastqc.zip",
 		html = QC3+"/{SAMPLE}_fastqc.html"
 	conda:
-		ENVS
+		"envs/fastqc.yaml"
 	log:
 		LOGS+"/fastqc_clean/{SAMPLE}"
 	params:
@@ -274,7 +244,7 @@ rule star_mapping:
 		out4 = MAPPED+"/{SAMPLES}Log.progress.out",
 		out5 = MAPPED+"/{SAMPLES}SJ.out.tab",
 	conda:
-		ENVS
+		"envs/star.yaml"
 	log:
 		log1 = LOGS+"/star_mapping/{SAMPLES}",
 	params:
@@ -306,8 +276,6 @@ rule sort:
 		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
 	output:
 		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.sorted.bam"
-	conda:
-		ENVS
 	params:
 		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.sorted"
 	shell:
@@ -321,7 +289,7 @@ rule samtools_bai1:
 	output:
 		MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam.bai"
 	conda:
-		ENVS
+		"envs/samtools.yaml"
 	params:
 		""
 	shell:
@@ -389,19 +357,3 @@ rule compose_merge:
 		LOGS+"/compose_merge.log"
 	run:
 		with open(output.txt, "w") as out: print(*input, sep="\n", file=out)
-
-
-rule merge_assemblies:
-	input:
-		CUFFLINK+"/assemblies.txt"
-	output:
-		CUFFLINK+"/merged.gtf"
-	conda:
-		"envs/cufflinks.yaml",
-	params:
-		ref = REFERENCES+"/Plantago.fasta",
-		merged = CUFFLINK
-	shell:
-		"""
-		cuffmerge -p 5 -o {params.merged} -s {params.ref} {input}
-		"""
