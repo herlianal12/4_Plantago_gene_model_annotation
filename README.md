@@ -84,7 +84,35 @@ Follow this guideline from NCBI (https://submit.ncbi.nlm.nih.gov/about/sra/)
 bash datasets/mito_chlro_genome.sh
 
 # Get rRNA sequences
-bash datasets/rRNA_sequences.sh
+
+   
+wget "https://www.arb-silva.de/fileadmin/silva_databases/release_128/Exports/SILVA_128_LSURef_tax_silva.fasta.gz" \
+-O database_rrna/SILVA_128_LSURef_tax_silva.fasta.gz && gunzip database_rrna/SILVA_128_LSURef_tax_silva.fasta.gz
+
+wget "https://www.arb-silva.de/fileadmin/silva_databases/release_138/Exports/SILVA_138_SSURef_NR99_tax_silva.fasta.gz" \
+-O database_rrna/SILVA_138_SSURef_NR99_tax_silva.fasta.gz && gunzip database_rrna/SILVA_138_SSURef_NR99_tax_silva.fasta.gz
+
+wget "https://www.arb-silva.de/fileadmin/silva_databases/release_138/Exports/SILVA_138_SSURef_tax_silva.fasta.gz" \
+-O database_rrna/SILVA_138_SSURef_tax_silva.fasta.gz && gunzip database_rrna/SILVA_138_SSURef_tax_silva.fasta.gz
+
+wget "https://www.arb-silva.de/fileadmin/silva_databases/release_138/Exports/SILVA_138_SSURef_tax_silva.fasta.gz" \
+-O database/SILVA_138_SSURef_tax_silva.fasta.gz && gunzip database/SILVA_138_SSURef_tax_silva.fasta.gz
+
+wget "http://combio.pl/rrna/static/download/Archaea.fasta" \
+-O database_rrna/Archaea.fasta
+
+wget "http://combio.pl/rrna/static/download/Bacteria.fasta" \
+-O database_rrna/Bacteria.fasta
+
+wget "http://combio.pl/rrna/static/download/Mitochondria.fasta" \
+-O database_rrna/Mitochondria.fasta
+
+wget "http://combio.pl/rrna/static/download/Plastids.fasta" \
+-O database_rrna/Plastids.fasta
+
+wget "http://combio.pl/rrna/static/download/Eukaryota.fasta" \
+-O database_rrna/Eukaryota.fasta
+
 
 # Get a list of transcript paths from different RNAseq groups
 bash datasets/assemblies.sh
@@ -97,7 +125,17 @@ Build_Trinotate_Boilerplate_SQLite_db.pl  Trinotate # may not be working as they
 
 ## Or you can download directly from the website
 
-bash datasets/trinotate.sh
+wget "https://data.broadinstitute.org/Trinity/Trinotate_v3_RESOURCES/Trinotate_v3.sqlite.gz" \
+-O gene_model_protein/annotation/Trinotate.sqlite.gz &&
+gunzip gene_model_protein/annotation/Trinotate.sqlite.gz
+
+wget "https://data.broadinstitute.org/Trinity/Trinotate_v3_RESOURCES/Pfam-A.hmm.gz" \
+-O gene_model_protein/annotation/pfam/Pfam-A.hmm.gz &&
+gunzip gene_model_protein/annotation/pfam/Pfam-A.hmm.gz
+
+wget "https://data.broadinstitute.org/Trinity/Trinotate_v3_RESOURCES/uniprot_sprot.pep.gz" \
+-O gene_model_protein/annotation/uniprot/uniprot_sprot.pep.gz &&
+gunzip gene_model_protein/annotation/uniprot/uniprot_sprot.pep.gz
 
 ```
 
