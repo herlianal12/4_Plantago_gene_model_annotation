@@ -236,7 +236,7 @@ rule star_mapping:
 	input:
 		file1 = CLEAN+"/{SAMPLES}_R1_001.fastq.gz",
 		file2 = CLEAN+"/{SAMPLES}_R2_001.fastq.gz",
-		index = directory(DIR+"/index"),
+		index = directory(DIR+"/STAR"),
 	output:
 		out1 = MAPPED+"/{SAMPLES}Aligned.sortedByCoord.out.bam",
 		out2 = MAPPED+"/{SAMPLES}Log.final.out",
