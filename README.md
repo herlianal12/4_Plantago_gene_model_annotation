@@ -2,7 +2,7 @@
 
 This repository is aimed to document, develop, and test pipelines for generating gene model and annotation for Plantago ovata. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtained in this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
 
-There are 9 Snakefiles. Snakefile_paired_stranded_illumina_1, Snakefile_paired_stranded_illumina_2, Snakefile_single_stranded_illumina, Snakefile_single_unstranded_illumina, Snakefile_single_unstranded_454 and Snakefile_paired_unstranded_illumina are rules for generating transcript from 6 different groups of RNAseq data. These six Snakefiles need to be executed first before running Snakefile_gene_model_RNA and Snakefile_gene_model_protein.
+There are 8 Snakefiles. Snakefile_paired_stranded_illumina_1, Snakefile_paired_stranded_illumina_2, Snakefile_single_stranded_illumina, Snakefile_single_unstranded_illumina, Snakefile_single_unstranded_454 and Snakefile_paired_unstranded_illumina are rules for generating transcript from 6 different groups of RNAseq data. These six Snakefiles need to be executed first before running Snakefile_gene_model_RNA and Snakefile_gene_model_protein.
 
 All softwares or modules to execute Snakefiles are stored in folder envs, while config.yaml stores information about sample names, file and directory paths that can be accessed by Snakefiles.
 
@@ -63,7 +63,7 @@ bash paired_unstranded_illumina.sh
 
 ```bash
 
-# Get Plantago mitocondria and chloroplast genome sequences (originally downloaded from NCBI website)
+# Get *Plantago* mitocondria gene and chloroplast genome sequences (originally downloaded from NCBI website)
 bash mito_chlro_genome.sh
 
 # Get rRNA sequences
@@ -82,10 +82,6 @@ Build_Trinotate_Boilerplate_SQLite_db.pl  Trinotate # may not be working as they
 
 bash trinotate.sh
 
-# Get non-coding RNA sequences
-
-bash non_coding_RNA.sh
-
 ```
 
 ```bash
@@ -98,27 +94,27 @@ module load Anaconda3 Singularity
 ## Run these workflows in order and use dryrun mode first to detect any problem related to snakemake rules
 
 ### 1st workflow 
-snakemake --dryrun --snakefile Snakefile_paired_stranded_illumina_1
-snakemake --dryrun --snakefile Snakefile_paired_stranded_illumina_2
-snakemake --dryrun --snakefile Snakefile_single_stranded_illumina
-snakemake --dryrun --snakefile Snakefile_single_unstranded_illumina
-snakemake --dryrun --snakefile Snakefile_single_unstranded_454
-snakemake --dryrun --snakefile Snakefile_paired_unstranded_illumina
+snakemake --dry-run --snakefile Snakefile_paired_stranded_illumina_1
+snakemake --dry-run --snakefile Snakefile_paired_stranded_illumina_2
+snakemake --dry-run --snakefile Snakefile_single_stranded_illumina
+snakemake --dry-run --snakefile Snakefile_single_unstranded_illumina
+snakemake --dry-run --snakefile Snakefile_single_unstranded_454
+snakemake --dry-run --snakefile Snakefile_paired_unstranded_illumina
 
-snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_paired_stranded_illumina_1
-snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_paired_stranded_illumina_2
-snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_single_stranded_illumina
-snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_single_unstranded_illumina
-snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_single_unstranded_454
-snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_paired_unstranded_illumina
+snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_paired_stranded_illumina_1
+snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_paired_stranded_illumina_2
+snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_single_stranded_illumina
+snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_single_unstranded_illumina
+snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_single_unstranded_454
+snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_paired_unstranded_illumina
 
 ### 2nd workflow
 snakemake --dryrun --snakefile Snakefile_gene_model_RNA
-snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_gene_model_RNA
+snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_gene_model_RNA
 
 ### 3rd workflow
 snakemake --dryrun --snakefile Snakefile_gene_model_protein
-snakemake --profile profiles/slurm --use-singularity --snakefile Snakefile_gene_model_protein
+snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_gene_model_protein
 
 ```
 
