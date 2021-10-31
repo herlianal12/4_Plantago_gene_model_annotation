@@ -1,8 +1,3 @@
-# A global singularity image to be used for all jobs - need to specify --use-singularity and have singularity available on the command line
-# This image already contains the bioinformatic tools we will be using singularity:
-#"file:///shared/.singularity/nextflow-embl-abr-webinar.simg",
-"docker://rsuchecki/nextflow-embl-abr-webinar"
-
 configfile: "config.yaml"
 
 SAMPLES         = config["SAMPLES5"]
@@ -33,17 +28,17 @@ CUFFLINK        = config["CUFFLINK6"]
 # the list of ALL the files you want the workflow to create. e.g.:
 rule all:
 	input:
-		#expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		#MULTIQC1+"/multiqc_report.html",
-		#expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		#expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
-		#MULTIQC2+"/multiqc_report.html",
-		#expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
-		#expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES),
-		#MULTIQC3+"/multiqc_report.html",
+		expand(QC1+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		MULTIQC1+"/multiqc_report.html",
+		expand(TRIMMED+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		expand(QC2+"/{SAMPLE}_{READ}_fastqc.html", SAMPLE=SAMPLES, READ=READS),
+		MULTIQC2+"/multiqc_report.html",
+		expand(CLEAN+"/{SAMPLE}_{READ}.fastq.gz", SAMPLE=SAMPLES, READ=READS),
+		expand(CLEAN+"/{SAMPLE}_stat", SAMPLE=SAMPLES),
+		MULTIQC3+"/multiqc_report.html",
 		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam", SAMPLE=SAMPLES),
 		MULTIQC4+"/multiqc_report.html",
-		#MULTIQC5+"/multiqc_report.html",
+		MULTIQC5+"/multiqc_report.html",
 		expand(CUFFLINK+"/{SAMPLE}/transcripts.gtf", SAMPLE=SAMPLES),
 		CUFFLINK+"/assemblies.txt",
 		expand(MAPPED+"/{SAMPLE}Aligned.sortedByCoord.out.bam.bai", SAMPLE=SAMPLES)
