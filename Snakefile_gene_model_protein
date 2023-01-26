@@ -17,6 +17,7 @@ BAM1            = config["BAM8_1"]
 # the list of ALL the files you want the workflow to create. e.g.:
 rule all:
 	input:
+		GENE_MODEL_RNA+"/gene_model_RNA.gtf"
 		GENE_MODEL+"/gene_model_RNA.gff3",
 		GENE_MODEL+"/transcript.fasta",
 		GENE_MODEL+"/transcript.fasta.transdecoder_dir/longest_orfs.pep",
@@ -48,6 +49,22 @@ rule all:
 # Rules Proper #
 ################
 
+rule merge_assemblies:
+	input:
+		GENE_MODEL_RNA+"/assemblies.txt"
+	output:
+		GENE_MODEL_RNA+"/gene_model_RNA.gtf"
+	conda:
+		"envs/cufflinks.yaml"
+	params: 
+		genome = REFERENCES+"/Plantago_ovata_ncbi.fasta",
+		output = "gffcmp.combined.gtf"
+	shell:
+		"""
+		gffcompare -D -s {params.genome} -i {input} &&
+		mv {params.output} {output}
+		"""
+		
 rule gtftofasta:
 	input:
 		gtf = GENE_MODEL_RNA+"/gene_model_RNA.gtf",
