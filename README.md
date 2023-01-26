@@ -21,7 +21,7 @@ All tools or modules to execute Snakefiles are stored in folder envs, while conf
 
 ## Overall workflow for generating gene annotation
 
-[dag.pdf](https://github.com/herlianal12/4_Plantago_gene_model_annotation/files/10507681/dag.pdf)
+![dag](https://user-images.githubusercontent.com/57382343/214975083-ba582a19-0938-49dd-a601-7ca964b602ca.png)
 
 ## Setup Required Input Data
 
