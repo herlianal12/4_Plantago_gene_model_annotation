@@ -152,9 +152,7 @@ DIR3: "single_stranded_illumina"
 DIR4: "single_unstranded_illumina"
 DIR5: "single_unstranded_454"
 DIR6: "paired_unstranded_illumina"
-DIR7: "gene_model_RNA"
-DIR8: "gene_model_protein"
-DIR9: "gene_model_compared"
+DIR7: "gene_model"
 
 ##########################################################################################
 ## Directories for Plantago genome data
@@ -282,24 +280,9 @@ CUFFLINK6:        "paired_unstranded_illumina/cufflink"
 
 
 #########################################################################################
-## Directories for generating gene model (RNA)
+## Directories for generating gene model
 
-GENE_MODEL7:      "gene_model_RNA/gene_model"
-COUNTS7:          "gene_model_RNA/counts"
-MULTIQC7:         "gene_model_RNA/multiqc_all"
-BAM7_1:           "paired_stranded_illumina_1/mapped_reads"
-BAM7_2:           "single_stranded_illumina/mapped_reads"
-BAM7_3:           "single_unstranded_illumina/mapped_reads"
-BAM7_4:           "single_unstranded_454/mapped_reads"
-BAM7_5:           "paired_unstranded_illumina/mapped_reads"
-
-
-#########################################################################################
-## Directories for generating gene model (protein)
-
-GENE_MODEL8:      "gene_model_protein/gene_model"
-ANNOTATION8:      "gene_model_protein/annotation"
-COUNTS8:          "gene_model_protein/counts"
-BAM8_1:           "paired_stranded_illumina_1/mapped_reads"
+GENE_MODEL:      "gene_model/gene_model"
+ANNOTATION:      "gene_model/annotation"
 
 
