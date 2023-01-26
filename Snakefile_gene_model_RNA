@@ -1,21 +1,7 @@
 configfile: "config.yaml"
 
-SAMPLES1        = config["SAMPLES1"]
-SAMPLES2        = config["SAMPLES2"]
-SAMPLES3        = config["SAMPLES3"]
-SAMPLES4        = config["SAMPLES4"]
-SAMPLES5        = config["SAMPLES5"]
-ENVS            = config["ENVS"]
 REFERENCES	= config["REFERENCES"]
-LOGS            = config["LOGS"]
-DIR             = config["DIR7"]
 GENE_MODEL      = config["GENE_MODEL7"]
-MULTIQC         = config["MULTIQC7"]
-BAM1            = config["BAM7_1"]
-BAM2            = config["BAM7_2"]
-BAM3            = config["BAM7_3"]
-BAM4            = config["BAM7_4"]
-BAM5            = config["BAM7_5"]
 
 
 ################
@@ -25,8 +11,7 @@ BAM5            = config["BAM7_5"]
 # the list of ALL the files you want the workflow to create. e.g.:
 rule all:
 	input:
-		GENE_MODEL+"/gene_model_RNA.gtf",
-		MULTIQC+"/multiqc_report.html",
+		GENE_MODEL+"/gene_model_RNA.gtf"
 
 ################
 # Rules Proper #
@@ -46,30 +31,4 @@ rule merge_assemblies:
 		"""
 		gffcompare -D -s {params.genome} -i {input} &&
 		mv {params.output} {output}
-		"""
-
-rule multiqc_all:
-	input:
-		log1 = expand(BAM1+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES1),
-		log2 = expand(BAM2+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES2),
-		log3 = expand(BAM3+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES3),
-		log4 = expand(BAM4+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES4),
-		log5 = expand(BAM5+"/{SAMPLE}Log.final.out", SAMPLE=SAMPLES5),
-	output:
-		MULTIQC+"/multiqc_report.html"
-	conda:
-		"envs/multiqc.yaml"
-	log:
-		LOGS+"/multiqc_report"
-	params:
-		indir1 = BAM1 ,
-		indir2 = BAM2 ,
-		indir3 = BAM3 ,
-		indir4 = BAM4 ,
-		indir5 = BAM5 ,
-		outdir = MULTIQC
-	shell:
-		"""
-		multiqc {params.indir1} {params.indir2} {params.indir3} {params.indir4} {params.indir5} -o {params.outdir}
-		2> {log}
 		"""
