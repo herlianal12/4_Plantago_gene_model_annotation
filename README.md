@@ -39,10 +39,9 @@ mkdir -p single_unstranded_illumina/raw_reads
 mkdir -p single_unstranded_454/raw_reads
 mkdir -p paired_unstranded_illumina/raw_reads
 mkdir database_rrna
-mkdir -p gene_model_RNA/gene_model
-mkdir -p gene_model_protein/annotation/pfam
-mkdir -p gene_model_protein/annotation/uniprot
-mkdir -p gene_model_compared/gene_model/rnacentral
+mkdir -p gene_model/gene_model
+mkdir -p gene_model/annotation/pfam
+mkdir -p gene_model/annotation/uniprot
 
 ```
 
@@ -168,7 +167,7 @@ snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Sna
 snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_paired_unstranded_illumina
 
 ### 2nd workflow
-snakemake --dryrun --snakefile Snakefile_gene_model_protein
+snakemake --dryrun --snakefile Snakefile_gene_model
 snakemake --profile profiles/slurm --use-singularity --use-conda --snakefile Snakefile_gene_model
 
 ```
