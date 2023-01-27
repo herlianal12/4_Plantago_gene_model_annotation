@@ -1,10 +1,18 @@
 # Gene model and functional annotation workflows for *Plantago ovata*
 
-This repository is aimed to document, develop, and test pipelines for generating gene models and annotation for *Plantago ovata*. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtained on this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
+This repository is aimed to document, develop, and test pipelines for generating gene models for *Plantago ovata*. The pipelines are written in Snakemake workflow management. Information about rules in snakemake can be obtained on this website https://snakemake.readthedocs.io/en/stable/. Snakefile templates and other files required for running snakemake in High Performance Computer (HPC) can be downloaded from https://github.com/UofABioinformaticsHub/snakemake_template.
 
 There are 8 Snakefiles. Snakefile_paired_stranded_illumina_1, Snakefile_paired_stranded_illumina_2, Snakefile_single_stranded_illumina, Snakefile_single_unstranded_illumina, Snakefile_single_unstranded_454 and Snakefile_paired_unstranded_illumina are rules for generating transcript from 6 different groups of RNAseq data. These six Snakefiles need to be executed first before running Snakefile_gene_model.
 
 All tools or modules to execute Snakefiles are stored in folder envs, while config.yaml stores information about sample names, file and directory paths that can be accessed by Snakefiles.
+
+To annotate the *P. ovata* genome, we run three rounds of MAKER v2.31.11 (MAKER, RRID:SCR_005309) pipeline with a combination of identified transcripts using TransDecoder (TransDecoder, RRID:SCR_017647), protein sequences from Viridiplantae, UniProtKb database (https://www.uniprot.org/taxonomy/33090), and ab initio gene predictors (SNAP v2013_11_1950 and AUGUSTUS v3.2.3). 
+
+tutorials for running MAKER:
+http://weatherby.genetics.utah.edu/MAKER/wiki/index.php/MAKER_Tutorial_for_WGS_Assembly_and_Annotation_Winter_School_2018
+https://bioinformaticsworkbook.org/dataAnalysis/GenomeAnnotation/Intro_To_Maker.html#gsc.tab=0 and
+https://gist.github.com/darencard/bb1001ac1532dd4225b030cf0cd61ce2
+
 
 
 ## Overall workflow for generating gene model
