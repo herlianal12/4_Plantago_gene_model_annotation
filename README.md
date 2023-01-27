@@ -8,7 +8,7 @@ All tools or modules to execute Snakefiles are stored in folder envs, while conf
 
 To annotate the *P. ovata* genome, we run three rounds of MAKER v2.31.11 (MAKER, RRID:SCR_005309) pipeline with a combination of identified transcripts using TransDecoder (TransDecoder, RRID:SCR_017647), protein sequences from Viridiplantae, UniProtKb database (https://www.uniprot.org/taxonomy/33090), and ab initio gene predictors (SNAP v2013_11_1950 and AUGUSTUS v3.2.3). 
 
-tutorials for running MAKER:
+Tutorials for running MAKER:
 http://weatherby.genetics.utah.edu/MAKER/wiki/index.php/MAKER_Tutorial_for_WGS_Assembly_and_Annotation_Winter_School_2018
 https://bioinformaticsworkbook.org/dataAnalysis/GenomeAnnotation/Intro_To_Maker.html#gsc.tab=0 and
 https://gist.github.com/darencard/bb1001ac1532dd4225b030cf0cd61ce2
